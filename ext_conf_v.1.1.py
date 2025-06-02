@@ -1,3 +1,4 @@
+#for cfg file
 import subprocess
 import sys
 from tqdm import tqdm
