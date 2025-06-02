@@ -4,14 +4,12 @@ import time
 from datetime import datetime, timedelta
 from colorama import Fore, Style, init
 
-# Конфигурация
 VERSION = "v.8.16.0_///_from_02.06.2025_by_rexamm1t"
 SAVE_FILE = "users.json"
 CRYPTO_SYMBOLS = {"EXTRACT": "₿", "BTC": "₿", "ETH": "Ξ", "LTC": "Ł"}
 CURRENCY = "₿"
 INITIAL_BALANCE = 1000.0
 
-# Инициализация colorama
 init(autoreset=True)
 
 def dynamic_border(text, width=50, border_color=Fore.MAGENTA):
