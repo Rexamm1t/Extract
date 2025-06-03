@@ -8,7 +8,7 @@
 
 (ПРИ УСТАНОВКАХ ВОЗМОЖЕН ВОПРОС y/n - ЭТО ОЗНАЧАЕТ ПОДТВЕРЖДЕНИЕ ТОГО ЧТО ВЫ ХОТИТЕ СКАЧАТЬ ПО, y - да, n - нет, в нашем случае пишем y и нажимаем enter)
 
-3.1 pkg update && upgrade
+3.1 pkg update && pkg upgrade
 
 3.2 pkg install git python pip
 
