@@ -28,14 +28,14 @@
 
 4.1 cd Extract
 
-4.2 python extract_v.8.16_stable.py
+4.2 python extract_last.py
 
 
 ЕСЛИ ВЫ ПРОСТО ЗАХОДИТЕ УЖЕ С УСТАНОВЛЕННЫМ extract
 
 1. cd Extract
 
-2. python extract_v.8.16_stable.py
+2. python extract_last.py
 
 
 ЕСЛИ ВЫШЛО ОБНОВЛЕНИЕ И ВЫ ХОТИТЕ ОБНОВИТЬ extract
@@ -48,7 +48,7 @@
 
 3.1 cd Extract
 
-3.2 python extract_v.8.16_stable.py
+3.2 python extract_last.py
 
 ВСЕ!
 
