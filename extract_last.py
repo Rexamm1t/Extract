@@ -7,8 +7,8 @@ from colorama import Fore, Style, init
 
 # Конфигурация
 VERSION = "EXTRACT 9.3.1"
-SAVE_PATH = "/etc/users.json"
-KEYS_PATH = "/etc/keys.json"
+SAVE_PATH = "users.json"
+KEYS_PATH = "keys.json"
 CRYPTO_SYMBOLS = {
     "EXTRACT": "Ⓔ", "BTC": "₿", "ETH": "Ξ", "LTC": "Ł",
     "BNB": "Ɥ", "ADA": "𝔸", "SOL": "S", "XRP": "✕",
