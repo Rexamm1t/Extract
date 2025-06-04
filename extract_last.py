@@ -6,7 +6,7 @@ from datetime import datetime, timedelta
 from colorama import Fore, Style, init
 
 # Конфигурация
-VERSION = "EXTRACT 9.2.1"
+VERSION = "EXTRACT 9.3.1"
 SAVE_PATH = "/etc/users.json"
 KEYS_PATH = "/etc/keys.json"
 CRYPTO_SYMBOLS = {
@@ -32,9 +32,9 @@ AUTOSAVE_INTERVAL = 300
 
 init(autoreset=True)
 
-def dynamic_border(text, border_color=Fore.MAGENTA):
+def dynamic_border(text, border_color=Fore.MAGENTA, width=None):
     lines = text.split('\n')
-    max_width = max(len(line) for line in lines) + 4
+    max_width = width if width else max(len(line) for line in lines) + 4
     border = '═' * (max_width - 2)
     bordered = [f"{border_color}╔{border}╗"]
     for line in lines:
@@ -64,7 +64,7 @@ def print_art():
     """
     print(gradient_text(art, [Fore.RED, Fore.YELLOW, Fore.GREEN, Fore.CYAN, Fore.BLUE, Fore.MAGENTA]))
     print(Fore.RED + "By Rexamm1t, tg: @rexamm1t")
-    print(Fore.BLUE + dynamic_border("Для получения списка команд введите help", 40, Fore.BLUE) + "\n")
+    print(dynamic_border("Для получения списка команд введите help", Fore.BLUE))
 
 class CryptoMarket:
     def __init__(self):
@@ -186,7 +186,7 @@ class User:
             f"{Fore.GREEN}🎉 Уровень UP! {self.level-1} → {self.level}\n"
             f"+{reward}{CURRENCY} бонус\n"
             f"Следующий уровень: {self.required_xp():.0f} XP",
-            50, Fore.YELLOW
+            Fore.YELLOW
         ))
 
     def show_level_progress(self):
@@ -228,7 +228,7 @@ class User:
             )
 
         stats = '\n'.join(content)
-        print(dynamic_border(f"{Fore.GREEN}Профиль {self.username}\n{stats}", 60))
+        print(dynamic_border(f"{Fore.GREEN}Профиль {self.username}\n{stats}", Fore.GREEN))
 
 class Casino:
     def __init__(self):
@@ -341,7 +341,7 @@ class Casino:
         ]
         for i, effect in enumerate(event["effects"], 1):
             content.append(f"{i}. {effect}")
-        print(dynamic_border('\n'.join(content), 50, Fore.MAGENTA))
+        print(dynamic_border('\n'.join(content), Fore.MAGENTA))
 
     def apply_event_effects(self, amount):
         now = datetime.now()
@@ -425,41 +425,31 @@ class Casino:
         content = [f"{Fore.CYAN}Зарегистрированные пользователи:"] + profiles
         print(dynamic_border('\n'.join(content), Fore.BLUE))
 
-def slots(self, bet):
+    def slots(self, bet):
         if not self._validate_bet(bet):
             return
 
+        print(dynamic_border(f"{Fore.CYAN}🎰 ИГРАЕМ В АВТОМАТЫ!", Fore.CYAN))
         self._update_balance(-bet)
 
-        symbols = ["♦", "♠", "♥", "♣", "★", "‡", "Ω"]
-        
-        print(dynamic_border(f"{Fore.YELLOW}🌀 Запуск слот-машины...", 40, Fore.YELLOW))
-        
-        for i in range(12):
-            frame = [random.choice(symbols) for _ in range(3)]
-            print("\r" + " | ".join(frame), end="")
-            time.sleep(0.08 * (i**0.5))
+        symbols = ["🍒", "🍊", "🍋", "💎", "7️⃣", "🔔"]
+        results = [random.choice(symbols) for _ in range(3)]
+        line = " | ".join(results)
+        print(f"\n{line}\n")
 
-        result = [random.choice(symbols) for _ in range(3)]
-        print(f"\r{' | '.join(result)}")
-
-        if all(x == "★" for x in result):
-            win = bet * 50
-        elif len(set(result)) == 1:
+        if results[0] == results[1] == results[2]:
             win = bet * 10
-        elif result[0] == result[1] or result[1] == result[2]:
+            print(dynamic_border(f"{Fore.GREEN}ДЖЕКПОТ! +{win}{CURRENCY}", Fore.GREEN))
+        elif results[0] == results[1] or results[1] == results[2]:
             win = bet * 2
+            print(dynamic_border(f"{Fore.YELLOW}Выигрыш! +{win}{CURRENCY}", Fore.YELLOW))
         else:
             win = 0
+            print(dynamic_border(f"{Fore.RED}Проигрыш", Fore.RED))
 
         self._process_result(win, bet)
 
-        if win > 0:
-            print(dynamic_border(f"{Fore.GREEN}Выигрыш! +{win:.2f}{CURRENCY}", 30, Fore.GREEN))
-        else:
-            print(dynamic_border(f"{Fore.RED}Повезёт в следующий раз!", 30, Fore.RED))
-
-    def trade(self, command):    
+    def trade(self, command):
         if not self.current_user:
             print(f"{Fore.RED}Сначала выберите пользователя!")
             return
@@ -486,19 +476,19 @@ def slots(self, bet):
                     print(f"{Fore.RED}Недостаточно средств!")
                     return
                 self._update_balance(-cost)
-                self._update_balance(amount, coin)
+                self.current_user.crypto_balance[coin] += amount
                 self.current_user.add_transaction('buy', coin, amount, cost)
-                print(dynamic_border(f"{Fore.GREEN}Куплено {amount:.4f} {coin}", 40, Fore.CYAN))
+                print(dynamic_border(f"{Fore.GREEN}Куплено {amount:.4f} {coin}", Fore.CYAN, 40))
 
             elif action == "sell":
-                if not self._check_balance(amount, coin):
+                if self.current_user.crypto_balance.get(coin, 0) < amount:
                     print(f"{Fore.RED}Недостаточно {coin} для продажи!")
                     return
                 value = amount * self.market.get_rate(coin) * 0.99
-                self._update_balance(-amount, coin)
+                self.current_user.crypto_balance[coin] -= amount
                 self._update_balance(value)
                 self.current_user.add_transaction('sell', coin, amount, value)
-                print(dynamic_border(f"{Fore.GREEN}Продано {amount:.4f} {coin}", 40, Fore.MAGENTA))
+                print(dynamic_border(f"{Fore.GREEN}Продано {amount:.4f} {coin}", Fore.MAGENTA, 40))
 
             else:
                 print(f"{Fore.RED}Неизвестное действие: {action}")
@@ -514,44 +504,43 @@ def slots(self, bet):
         if not self._validate_bet(bet):
             return
 
+        print(dynamic_border(f"{Fore.RED}🐉 ВСТУПАЕМ В БОЙ!", Fore.RED))
         self._update_balance(-bet)
 
-        monsters = ["Дракон", "Голем", "Демон", "Титан"]
-        player_monster = random.choice(monsters)
-        enemy_monster = random.choice(monsters)
+        player_attack = random.randint(1, 100) + self.current_user.level * 2
+        monster_attack = random.randint(50, 150)
 
-        print(dynamic_border(f"{Fore.YELLOW}⚔️ {player_monster} vs {enemy_monster} ⚔️", 45, Fore.RED))
+        print(f"{Fore.CYAN}Ваша сила атаки: {player_attack}")
+        print(f"{Fore.RED}Сила атаки монстра: {monster_attack}")
 
-        for _ in range(3):
-            print(f"{Fore.RED}💥 Удар!", end="")
-            time.sleep(0.3)
-            print(f"{Fore.BLUE} 🛡️ Блок!", end="\r")
-            time.sleep(0.3)
+        if player_attack > monster_attack:
+            win = bet * 3
+            print(dynamic_border(f"{Fore.GREEN}ПОБЕДА! +{win}{CURRENCY}", Fore.GREEN))
+        else:
+            win = 0
+            print(dynamic_border(f"{Fore.RED}ПОРАЖЕНИЕ", Fore.RED))
 
-        win_chance = 0.45 + (len(player_monster) - len(enemy_monster)) * 0.05
-        win = random.random() < win_chance
-
-        self._process_result(bet * 2.5 if win else 0, bet)
+        self._process_result(win, bet)
 
     def dice(self, bet):
         if not self._validate_bet(bet):
             return
 
+        print(dynamic_border(f"{Fore.YELLOW}🎲 БРОСАЕМ КОСТИ", Fore.YELLOW))
         self._update_balance(-bet)
 
-        dice = [random.randint(1, 6), random.randint(1, 6)]
-        total = sum(dice)
+        player_dice = sum(random.randint(1, 6) for _ in range(3))
+        dealer_dice = sum(random.randint(1, 6) for _ in range(3))
 
-        print(dynamic_border(f"{Fore.YELLOW}🎲 Результат: {dice[0]} + {dice[1]} = {total}", 30, Fore.BLUE))
+        print(f"{Fore.CYAN}Ваши кости: {player_dice}")
+        print(f"{Fore.RED}Кости дилера: {dealer_dice}")
 
-        if total == 7:
-            win = bet * 3
-        elif total in [11, 12]:
+        if player_dice > dealer_dice:
             win = bet * 2
-        elif total % 2 == 0:
-            win = bet * 1.5
+            print(dynamic_border(f"{Fore.GREEN}ВЫИГРЫШ! +{win}{CURRENCY}", Fore.GREEN))
         else:
             win = 0
+            print(dynamic_border(f"{Fore.RED}ПРОИГРЫШ", Fore.RED))
 
         self._process_result(win, bet)
 
@@ -559,94 +548,74 @@ def slots(self, bet):
         if not self._validate_bet(bet):
             return
 
+        print(dynamic_border(f"{Fore.MAGENTA}🎴 ИГРА HIGH-LOW", Fore.MAGENTA))
         self._update_balance(-bet)
-        
-        current_num = random.randint(0, 200)
-        next_num = random.randint(0, 200)
-        
-        print(dynamic_border(f"{Fore.MAGENTA}   CRYPTO HIGH/LOW   ", 45, Fore.MAGENTA))
-        
-        content = [
-            f"{Fore.CYAN}Ставка: {Fore.WHITE}{bet:.2f}{CURRENCY}",
-            f"{Fore.CYAN}Баланс: {Fore.WHITE}{self.current_user.crypto_balance['EXTRACT']:.2f}{CURRENCY}"
-        ]
-        print(dynamic_border('\n'.join(content), 45, Fore.CYAN))
 
-        print(dynamic_border(f"{Fore.YELLOW}Генерация чисел...", 45, Fore.YELLOW))
-        
-        print(f"{Fore.YELLOW}Текущее число: ", end="")
-        for _ in range(8):
-            print(f"{Fore.YELLOW}⌛ {random.randint(0, 200):03d}", end="\r")
-            time.sleep(0.08)
-        print(f"{Fore.GREEN}▶ {current_num:03d} ◀")
+        current = random.randint(1, 100)
+        print(f"Текущее число: {Fore.CYAN}{current}")
 
-        choice = None
-        while choice not in ['h', 'l']:
-            choice = input(f"{Fore.GREEN}➤ Ваш выбор (H/L): ").strip().lower()
+        choice = input(f"{Fore.YELLOW}Следующее будет выше (h) или ниже (l)? ").lower()
 
-        print(dynamic_border(f"{Fore.YELLOW}Результат...", 45, Fore.YELLOW))
-        result_color = Fore.LIGHTGREEN_EX if (next_num > current_num and choice == 'h') or (next_num < current_num and choice == 'l') else Fore.RED
-        result = f"{current_num:03d} {'>' if next_num > current_num else '<' if next_num < current_num else '='} {next_num:03d}"
-        print(dynamic_border(f"{result_color}{result}", 20, result_color))
+        next_num = random.randint(1, 100)
+        print(f"Новое число: {Fore.CYAN}{next_num}")
 
-        if current_num == next_num:
-            win = bet
-        elif (choice == 'h' and next_num > current_num) or (choice == 'l' and next_num < current_num):
+        if (choice == 'h' and next_num > current) or (choice == 'l' and next_num < current):
             win = bet * 2
+            print(dynamic_border(f"{Fore.GREEN}ПОБЕДА! +{win}{CURRENCY}", Fore.GREEN))
         else:
             win = 0
+            print(dynamic_border(f"{Fore.RED}ПРОИГРЫШ", Fore.RED))
 
         self._process_result(win, bet)
 
     def show_rates(self):
-        content = [f"{Fore.YELLOW}1 {coin} = {rate:.2f}{CURRENCY}" 
-                  for coin, rate in self.market.rates.items() if coin != "EXTRACT"]
-        print(dynamic_border(f"{Fore.CYAN}Текущие курсы\n" + '\n'.join(content), 40))
+        content = [f"{Fore.CYAN}Текущие курсы:"]
+        for coin, rate in self.market.rates.items():
+            if coin == "EXTRACT":
+                continue
+            content.append(
+                f"{CRYPTO_SYMBOLS[coin]} 1 {coin} = {rate:.2f}{CURRENCY}"
+            )
+        print(dynamic_border('\n'.join(content), Fore.BLUE))
 
     def display_help(self):
-        help_content = f"""
-{Fore.CYAN}Основные:
-  create [имя]      - Создать пользователя
-  switch [имя]      - Переключить пользователя
-  delete [имя]      - Удалить пользователя
-  exit -un          - Выйти из аккаунта
-  help              - Показать помощь
-
-{Fore.MAGENTA}Игры:
-  slots [сумма]     - Слот-машина
-  battle [сумма]    - Битва монстров
-  dice [сумма]      - Игра в кости
-  highlow [сумма]   - Больше/Меньше
-
-{Fore.GREEN}Трейдинг:
-  trade buy [монета] [кол-во]  - Купить
-  trade sell [монета] [кол-во] - Продать
-  rates              - Курсы валют
-
-{Fore.YELLOW}Прочее:
-  s                 - Статистика
-  level             - Информация об уровне
-  season            - Текущее событие
-  crywall           - Крипто-баланс
-  verinf            - Версия
-  exit              - Выход
-"""
-        print(dynamic_border(help_content, 50, Fore.BLUE))
+        help_text = f"""
+{Fore.CYAN}Доступные команды:
+{Fore.GREEN}create [ник]      {Fore.WHITE}- Создать нового пользователя
+{Fore.GREEN}switch [ник]     {Fore.WHITE}- Выбрать пользователя
+{Fore.GREEN}delete [ник]     {Fore.WHITE}- Удалить пользователя
+{Fore.GREEN}exit             {Fore.WHITE}- Выйти из игры
+{Fore.GREEN}exit -un         {Fore.WHITE}- Выйти из аккаунта
+{Fore.GREEN}slots [сумма]    {Fore.WHITE}- Играть в автоматы
+{Fore.GREEN}battle [сумма]   {Fore.WHITE}- Сразиться с монстром
+{Fore.GREEN}dice [сумма]     {Fore.WHITE}- Игра в кости
+{Fore.GREEN}highlow [сумма]  {Fore.WHITE}- Игра High-Low
+{Fore.GREEN}trade buy [монета] [кол-во] {Fore.WHITE}- Купить крипту
+{Fore.GREEN}trade sell [монета] [кол-во] {Fore.WHITE}- Продать крипту
+{Fore.GREEN}rates            {Fore.WHITE}- Показать курсы обмена
+{Fore.GREEN}s                {Fore.WHITE}- Статистика профиля
+{Fore.GREEN}crywall          {Fore.WHITE}- Показать баланс
+{Fore.GREEN}season           {Fore.WHITE}- Информация об ивентах
+{Fore.GREEN}verinf           {Fore.WHITE}- Информация о версии
+{Fore.GREEN}promo [код]      {Fore.WHITE}- Активировать промокод
+{Fore.GREEN}all profiles     {Fore.WHITE}- Все профили
+{Fore.GREEN}help             {Fore.WHITE}- Справка по командам
+        """
+        print(dynamic_border(help_text.strip(), Fore.CYAN))
 
     def display_version(self):
-        version_art = f"""
-{Fore.MAGENTA}╔{'═'*35}╗
-║ {rainbow_text('Extract Casino Platform')} ║
-║ {Fore.CYAN}Версия: {VERSION.ljust(24)} ║
-╚{'═'*35}╝
+        version_info = f"""
+{Fore.YELLOW}{VERSION}
+{Fore.CYAN}Автор: Rexamm1t
+{Fore.MAGENTA}Telegram: @rexamm1t
+{Fore.GREEN}Лицензия: MIT
         """
-        print(version_art)
+        print(dynamic_border(version_info.strip(), Fore.BLUE))
 
     def check_autosave(self):
         if time.time() - self.last_save > AUTOSAVE_INTERVAL:
             self.save_users()
             self.last_save = time.time()
-            print(f"{Fore.GREEN}Автосохранение выполнено!")
 
 def main():
     print_art()
@@ -709,6 +678,13 @@ def main():
                         bet = float(action.split()[1])
                         casino.dice(bet)
                     except:
+                        print(f"{Fore.RED}Используйте: dice [сумма]"
+                          )
+                elif action.startswith("dice"):
+                    try:
+                        bet = float(action.split()[1])
+                        casino.dice(bet)
+                    except:
                         print(f"{Fore.RED}Используйте: dice [сумма]")
 
                 elif action.startswith("highlow"):
@@ -738,7 +714,7 @@ def main():
                             casino.current_user.show_level_progress(),
                             f"{Fore.GREEN}Всего заработано: {casino.current_user.total_earned:.2f}{CURRENCY}"
                         ]
-                        print(dynamic_border('\n'.join(content), 40, Fore.YELLOW))
+                        print(dynamic_border('\n'.join(content), Fore.YELLOW))
                     else:
                         print(f"{Fore.RED}Пользователь не выбран!")
 
@@ -768,7 +744,7 @@ def main():
                     if casino.current_user:
                         casino.current_user.end_session()
                     casino.save_users()
-                    print(f"{gradient_text('\nДо встречи! Ваш прогресс сохранён.\n', [Fore.GREEN, Fore.BLUE])}")
+                    print(gradient_text("\nДо встречи! Ваш прогресс сохранён.\n", [Fore.GREEN, Fore.BLUE]))
                     break
                 
                 else:
@@ -787,7 +763,6 @@ def main():
         exit()
 
 if __name__ == "__main__":
-    # Проверка существования директории /etc
     if not os.path.exists('/etc'):
         os.makedirs('/etc', exist_ok=True)
     main()
