@@ -462,7 +462,7 @@ def slots(self, bet):
     def trade(self, command):
         if not self.current_user:
             print(f"{Fore.RED}Сначала выберите пользователя!")
-            return
+                return
 
         try:
             parts = command.split()
