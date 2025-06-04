@@ -459,10 +459,10 @@ def slots(self, bet):
         else:
             print(dynamic_border(f"{Fore.RED}Повезёт в следующий раз!", 30, Fore.RED))
 
-    def trade(self, command):
+    def trade(self, command):    
         if not self.current_user:
             print(f"{Fore.RED}Сначала выберите пользователя!")
-                return
+            return
 
         try:
             parts = command.split()
