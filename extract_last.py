@@ -408,6 +408,13 @@ class Casino:
             Fore.GREEN
         ))
 
+    def blackjack(self, bet):
+        if self.current_user:
+            game = Blackjack(self.current_user)
+            game.play(bet)
+        else:
+            print(f"{Fore.RED}Пользователь не выбран!")
+
     def check_season_event(self):
         now = datetime.now()
         current_month = now.month
