@@ -673,6 +673,7 @@ class Casino:
 {Fore.GREEN}exit -un         {Fore.WHITE}- Выйти из аккаунта
 {Fore.GREEN}slots [сумма]    {Fore.WHITE}- Играть в автоматы
 {Fore.GREEN}battle [сумма]   {Fore.WHITE}- Сразиться с монстром
+{Fore.GREEN}blackjack [сумма]   {Fore.WHITE}- играть в блекджек
 {Fore.GREEN}dice [сумма]     {Fore.WHITE}- Игра в кости
 {Fore.GREEN}highlow [сумма]  {Fore.WHITE}- Игра High-Low
 {Fore.GREEN}trade buy [монета] [кол-во] {Fore.WHITE}- Купить крипту
