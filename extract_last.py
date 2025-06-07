@@ -236,85 +236,6 @@ class User:
         stats = '\n'.join(content)
         print(dynamic_border(f"{Fore.GREEN}Профиль {self.username}\n{stats}", Fore.GREEN))
 
-class Blackjack:
-    def __init__(self, user):
-        self.user = user
-        self.deck = self.create_deck()
-
-    def create_deck(self):
-        suits = ['♠', '♥', '♦', '♣']
-        ranks = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A']
-        return [(rank, suit) for suit in suits for rank in ranks]
-
-    def deal_card(self):
-        return self.deck.pop(random.randint(0, len(self.deck) - 1))
-
-    def calculate_hand_value(self, hand):
-        value = 0
-        aces = 0
-        for card in hand:
-            rank, _ = card
-            if rank in ['J', 'Q', 'K']:
-                value += 10
-            elif rank == 'A':
-                aces += 1
-                value += 11
-            else:
-                value += int(rank)
-        
-        while value > 21 and aces:
-            value -= 10
-            aces -= 1
-        
-        return value
-
-    def play(self, bet):
-        if not self.user._validate_bet(bet):
-            return
-
-        print(dynamic_border(f"{Fore.YELLOW} БЛЭКДЖЕК", Fore.YELLOW))
-        self.user._update_balance(-bet)
-
-        player_hand = [self.deal_card(), self.deal_card()]
-        dealer_hand = [self.deal_card(), self.deal_card()]
-
-        print(f"Ваша рука: {player_hand} (значение: {self.calculate_hand_value(player_hand)})")
-        print(f"Рука дилера: [{dealer_hand[0]}, ?]")
-
-        while True:
-            action = input("Выберите действие (hit / stand): ").lower()
-            if action == "hit":
-                player_hand.append(self.deal_card())
-                print(f"Ваша рука: {player_hand} (значение: {self.calculate_hand_value(player_hand)})")
-                if self.calculate_hand_value(player_hand) > 21:
-                    print(dynamic_border(f"{Fore.RED}Вы превысили 21! Проигрыш.", Fore.RED))
-                    self.user.update_stats(False)
-                    return
-            elif action == "stand":
-                break
-            else:
-                print(f"{Fore.RED}Неверное действие!")
-
-        while self.calculate_hand_value(dealer_hand) < 17:
-            dealer_hand.append(self.deal_card())
-
-        print(f"Рука дилера: {dealer_hand} (значение: {self.calculate_hand_value(dealer_hand)})")
-
-        player_value = self.calculate_hand_value(player_hand)
-        dealer_value = self.calculate_hand_value(dealer_hand)
-
-        if dealer_value > 21 or player_value > dealer_value:
-            win = bet * 2  # Выигрыш
-            self.user._update_balance(win)
-            self.user.update_stats(True)
-            print(dynamic_border(f"{Fore.GREEN}Вы победили! +{win}{CURRENCY}", Fore.GREEN))
-        elif player_value < dealer_value:
-            self.user.update_stats(False)
-            print(dynamic_border(f"{Fore.RED}Вы проиграли!", Fore.RED))
-        else:
-            self.user._update_balance(bet)  # Возврат ставки
-            print(dynamic_border(f"{Fore.YELLOW}Ничья! Ставка возвращена.", Fore.YELLOW))
-
 class Casino:
     def __init__(self):
         self.users = {}
@@ -407,13 +328,6 @@ class Casino:
             f"{Fore.CYAN}Награда: {msg}",
             Fore.GREEN
         ))
-
-    def blackjack(self, bet):
-        if self.current_user:
-            game = Blackjack(self.current_user)
-            game.play(bet)
-        else:
-            print(f"{Fore.RED}Пользователь не выбран!")
 
     def check_season_event(self):
         now = datetime.now()
@@ -680,7 +594,6 @@ class Casino:
 {Fore.GREEN}exit -un         {Fore.WHITE}- Выйти из аккаунта
 {Fore.GREEN}slots [сумма]    {Fore.WHITE}- Играть в автоматы
 {Fore.GREEN}battle [сумма]   {Fore.WHITE}- Сразиться с монстром
-{Fore.GREEN}blackjack [сумма]   {Fore.WHITE}- играть в блекджек
 {Fore.GREEN}dice [сумма]     {Fore.WHITE}- Игра в кости
 {Fore.GREEN}highlow [сумма]  {Fore.WHITE}- Игра High-Low
 {Fore.GREEN}trade buy [монета] [кол-во] {Fore.WHITE}- Купить крипту
@@ -765,13 +678,6 @@ def main():
                         casino.slots(bet)
                     except:
                         print(f"{Fore.RED}Используйте: slots [сумма]")
-
-                elif action.startswith("blackjack"):
-                    try:
-                        bet = float(action.split()[1])
-                        casino.blackjack(bet)
-                    except:
-                        print(f"{Fore.RED}Используйте: blackjack [сумма]")
 
                 elif action.startswith("battle"):
                     try:
