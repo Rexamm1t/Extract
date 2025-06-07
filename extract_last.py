@@ -623,13 +623,6 @@ class Casino:
             self.save_users()
             self.last_save = time.time()
 
-    def blackjack(self, bet):
-    if self.current_user:
-        game = Blackjack(self.current_user)
-        game.play(bet)
-    else:
-        print(f"{Fore.RED}Пользователь не выбран!")
-
 def main():
     print_art()
     casino = Casino()
