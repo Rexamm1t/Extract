@@ -14,13 +14,13 @@
     "coin": "BTC",
     "amount": 1,
     "used": false
-  }
+  },
   "yxjs-6292-xbsk-0388": {
     "type": "crypto",
     "coin": "ETH",
     "amount": 5,
     "used": false
-  }
+  },
   "chdm-7392-ucns-0273": {
     "type": "xp",
     "amount": 1000,
@@ -36,7 +36,7 @@
     "coin": "",
     "amount": 2,
     "used": false
-  }
+  },
   "hxks-7292-cjen-0829": {
     "type": "crypto",
     "coin": "ATOM",
