@@ -8,7 +8,7 @@ from colorama import Fore, Style, init
 # Конфигурация
 INFO = "Extract Team (Rexamm1t, Wefol1x) tg: @rexamm1t, @wefol1x"
 VERSION = "EXTRACT 9.4.1"
-VERSION_ALL = "EXTRACT 9.4.1 #UNSTABLE# (7.7.25) (UNIX base)"
+VERSION_ALL = "EXTRACT 9.4.1 (2) (7.7.25) (UNIX base)"
 SAVE_PATH = "scripts/users.json"
 KEYS_PATH = "scripts/keys.json"
 CRYPTO_SYMBOLS = {
