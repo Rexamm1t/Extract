@@ -1,1 +1,24 @@
+{
+  "ydbj-6382-ufbd-6201": {
+    "type": "xp",
+    "amount": 1200,
+    "used": false
+  },
+  "yjxl-9172-ydml-1100": {
+    "type": "currency",
+    "amount": 100000,
+    "used": false
+  },
+  "dgdy-5299-hfhd-0822": {
+    "type": "crypto",
+    "coin": "BTC",
+    "amount": 1,
+    "used": false
+  }
+  "yxjs-6292-xbsk-0388": {
+    "type": "crypto",
+    "coin": "ETH",
+    "amount": 5,
+    "used": false
 
+}
