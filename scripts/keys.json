@@ -20,6 +20,7 @@
     "coin": "ETH",
     "amount": 5,
     "used": false
+  }
   "chdm-7392-ucns-0273": {
     "type": "xp",
     "amount": 1000,
