@@ -7,8 +7,8 @@ from colorama import Fore, Style, init
 
 # Конфигурация
 INFO = "Extract Team (Rexamm1t, Wefol1x) tg: @rexamm1t, @wefol1x"
-VERSION = "EXTRACT 9.4.1"
-VERSION_ALL = "EXTRACT 9.4.1 (2) (7.7.25) (UNIX base)"
+VERSION = "EXTRACT 9.4.5"
+VERSION_ALL = "EXTRACT 9.4.5 (8.7.25) (UNIX base)"
 SAVE_PATH = "scripts/users.json"
 KEYS_PATH = "scripts/keys.json"
 CRYPTO_SYMBOLS = {
@@ -80,20 +80,20 @@ def print_art():
 class CryptoMarket:
     def __init__(self):
         self.rates = {
-            "BTC": random.uniform(25000, 70000),
-            "ETH": random.uniform(1500, 4000),
-            "LTC": random.uniform(60, 300),
+            "BTC": random.uniform(25000, 110000),
+            "ETH": random.uniform(1500, 6000),
+            "LTC": random.uniform(60, 400),
             "BNB": random.uniform(200, 600),
-            "ADA": random.uniform(0.4, 2.5),
+            "ADA": random.uniform(200, 500),
             "SOL": random.uniform(20, 200),
-            "XRP": random.uniform(0.3, 1.5),
-            "DOT": random.uniform(4, 30),
-            "DOGE": random.uniform(0.05, 0.3),
-            "SHIB": random.uniform(0.000001, 0.00003),
+            "XRP": random.uniform(50, 100),
+            "DOT": random.uniform(4, 300),
+            "DOGE": random.uniform(300, 500),
+            "SHIB": random.uniform(1000, 20000),
             "AVAX": random.uniform(10, 100),
-            "TRX": random.uniform(0.05, 0.2),
-            "MATIC": random.uniform(0.5, 3),
-            "ATOM": random.uniform(8, 40),
+            "TRX": random.uniform(100, 200),
+            "MATIC": random.uniform(14000, 16000),
+            "ATOM": random.uniform(8, 1000),
             "EXTRACT": 1.0
         }
 
@@ -618,8 +618,8 @@ class Casino:
         version_info = f"""
 {Fore.YELLOW}{VERSION_ALL}
 {Fore.RED}{INFO}
-{Fore.CYAN}Автор: Rexamm1t
-{Fore.MAGENTA}Telegram: @rexamm1t
+{Fore.CYAN}Авторы: Rexamm1t, Wefol1x
+{Fore.MAGENTA}Telegram: @rexamm1t, @wefolix
 {Fore.GREEN}Лицензия: MIT
         """
         print(dynamic_border(version_info.strip(), Fore.BLUE))
