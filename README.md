@@ -1,7 +1,5 @@
 # Extract - Многофункциональный крипто-симуляционный игровой клиент
 
-## В данный момент проект переписывается с Python на C! Информация в данном Readme не актуальна.
-
 ![elogo](https://github.com/user-attachments/assets/dd879370-5143-4403-840c-5b898fa0e19e)
 
 
@@ -78,6 +76,8 @@ cd Extract
 ```bash
 bash extract_last.sh
 ```
+
+EXTRACT™ EXTRACT TEAM EXTRACT EXT 
 
 ![mitpng](https://github.com/user-attachments/assets/2f3476fc-02f5-49af-81b9-5f4dcdb857b1)
 
