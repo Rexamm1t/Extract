@@ -12,6 +12,7 @@ href="https://github.com/Rexamm1t"
   <a 
 href="https://github.com/Wefol1x"
 ><img src="https://img.shields.io/badge/GitHub-black?style=for-the-badge&logo=github&logoColor=white" alt="GitHub Wefol1x Badge" /></a>
+  <img src="https://img.shields.io/badge/Python-blue?style=for-the-badge&logo=python&logoColor=white" alt="Python Badge" />
 </div>
 
 <p>
