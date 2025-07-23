@@ -3,7 +3,7 @@
 ![elogo](https://github.com/Rexamm1t/Extract/blob/577654ac675b3e25611149f707efc7e86197644a/nlogo.jpg)
 
 <div id="badges">
-  <img src="https://img.shields.io/badge/Telegram-blue?style=for-the-badge&logo=telegram&logoColor=white" alt="Telegram Badge"/>
+  <img src="https://img.shields.io/badge/Telegram-blue?style=for-the-badge&logo=telegram&logoColor=white" alt="Telegram Badge"/ href="https://t.me/extract_official">
 </div>
 
 **Описание:**  
