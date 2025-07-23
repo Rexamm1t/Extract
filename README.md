@@ -8,6 +8,9 @@
 href="https://t.me/extract_official"
 ><img src="https://img.shields.io/badge/Telegram-blue?style=for-the-badge&logo=telegram&logoColor=white" alt="Telegram Badge" /></a>
 </div>
+  <a 
+href="https://github.com/Rexamm1t"
+><img src="https://img.shields.io/badge/GitHub-black?style=for-the-badge&logo=github&logoColor=white" alt="GitHub Badge" /></a>
 </center>
 
   <a href="https://github.com/Rexamm1t/Extract/releases/latest"><img src="https://img.shields.io/github/v/release/Rexamm1t/Extract" alt="Latest Release" /></a>
