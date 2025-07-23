@@ -6,6 +6,7 @@
   <a 
 href="https://t.me/extract_official"
 ><img src="https://img.shields.io/badge/Telegram-blue?style=for-the-badge&logo=telegram&logoColor=white" alt="Telegram Badge" /></a>
+     <font size="4">|</font>
   <a href="https://github.com/Rexamm1t/Extract/releases/latest"><img src="https://img.shields.io/github/v/release/Rexamm1t/Extract" alt="Latest Release" /></a>
 </div>
 
