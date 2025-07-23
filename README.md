@@ -50,13 +50,13 @@ cd Extract
 3. Включение скрипта
 
 ```bash
-chmod +x extract_last.sh
+chmod +x eum.sh
 ```
 
 4. Запуск
 
 ```bash
-bash extract_last.sh
+bash eum.sh
 ```
 
 ---
@@ -74,7 +74,7 @@ cd Extract
 ### Если же вы находитесь в директории __**Extract**__:
 
 ```bash
-bash extract_last.sh
+bash eum.sh
 ```
 
 EXTRACT™ EXTRACT TEAM EXTRACT EXT 
