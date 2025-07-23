@@ -1,6 +1,6 @@
 # Extract - Многофункциональный крипто-симуляционный игровой клиент
 
-![elogo](https://github.com/user-attachments/assets/dd879370-5143-4403-840c-5b898fa0e19e)
+![elogo](https://github.com/Rexamm1t/Extract/blob/577654ac675b3e25611149f707efc7e86197644a/nlogo.jpg)
 
 
 **Описание:**  
