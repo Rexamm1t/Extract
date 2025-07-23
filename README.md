@@ -2,19 +2,18 @@
 
 ![elogo](https://github.com/Rexamm1t/Extract/blob/577654ac675b3e25611149f707efc7e86197644a/nlogo.jpg)
 
-<center>
 <div id="badges">
   <a 
 href="https://t.me/extract_official"
 ><img src="https://img.shields.io/badge/Telegram-blue?style=for-the-badge&logo=telegram&logoColor=white" alt="Telegram Badge" /></a>
-</div>
   <a 
 href="https://github.com/Rexamm1t"
 ><img src="https://img.shields.io/badge/GitHub-black?style=for-the-badge&logo=github&logoColor=white" alt="GitHub Badge" /></a>
-</center>
+</div>
 
+<p>
   <a href="https://github.com/Rexamm1t/Extract/releases/latest"><img src="https://img.shields.io/github/v/release/Rexamm1t/Extract" alt="Latest Release" /></a>
-
+</p>
 
 **Описание:**  
 Extract — это универсальный крипто-симуляционный игровой клиент, разработанный на __**Python**__. Проект включает в себя систему управления пользователями, криптовалютный рынок, игровые автоматы, ставки, уровни опыта и автоматическое сохранение данных. Поддерживается многофункциональный интерфейс с цветовым оформлением, динамической анимацией и расширенными возможностями для пользователей.
