@@ -8,7 +8,10 @@ href="https://t.me/extract_official"
 ><img src="https://img.shields.io/badge/Telegram-blue?style=for-the-badge&logo=telegram&logoColor=white" alt="Telegram Badge" /></a>
   <a 
 href="https://github.com/Rexamm1t"
-><img src="https://img.shields.io/badge/GitHub-black?style=for-the-badge&logo=github&logoColor=white" alt="GitHub Badge" /></a>
+><img src="https://img.shields.io/badge/GitHub-black?style=for-the-badge&logo=github&logoColor=white" alt="GitHub Rexamm1t Badge" /></a>
+  <a 
+href="https://github.com/Wefol1x"
+><img src="https://img.shields.io/badge/GitHub-black?style=for-the-badge&logo=github&logoColor=white" alt="GitHub Wefol1x Badge" /></a>
 </div>
 
 <p>
