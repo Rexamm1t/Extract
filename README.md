@@ -17,6 +17,8 @@ href="https://github.com/Wefol1x"
 
 <p>
   <a href="https://github.com/Rexamm1t/Extract/releases/latest"><img src="https://img.shields.io/github/v/release/Rexamm1t/Extract" alt="Latest Release" /></a>
+[![Badge License]][License] 
+![Badge Language] 
 </p>
 
 **Описание:**  
