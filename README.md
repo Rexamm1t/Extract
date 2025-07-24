@@ -102,8 +102,3 @@ cd Extract
 ```bash
 bash eum.sh
 ```
-
-EXTRACT™ EXTRACT TEAM EXTRACT EXT 
-
-![mitpng](https://github.com/user-attachments/assets/2f3476fc-02f5-49af-81b9-5f4dcdb857b1)
-
