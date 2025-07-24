@@ -1,0 +1,66 @@
+{
+    "ydbj-6382-ufbd-6201": {
+        "type": "xp",
+        "amount": 30000,
+        "used": false
+    },
+    "yjxl-9172-ydml-1100": {
+        "type": "currency",
+        "amount": 100000,
+        "used": false
+    },
+    "dgdy-5299-hfhd-0822": {
+        "type": "crypto",
+        "coin": "BTC",
+        "amount": 1,
+        "used": false
+    },
+    "yxjs-6292-xbsk-0388": {
+        "type": "crypto",
+        "coin": "ETH",
+        "amount": 5,
+        "used": false
+    },
+    "chdm-7392-ucns-0273": {
+        "type": "xp",
+        "amount": 10000,
+        "used": false
+    },
+    "nfkd-7492-ufns-0382": {
+        "type": "currency",
+        "amount": 80000,
+        "used": false
+    },
+    "xusm-8392-udns-2729": {
+        "type": "crypto",
+        "coin": "BTC",
+        "amount": 2,
+        "used": false
+    },
+    "gsii-5299-tena-5207": {
+        "type": "eup",
+        "amount": 14,
+        "used": false
+    },
+    "wgis-6292-jrno-0273": {
+        "type": "eup",
+        "amount": 7,
+        "used": false
+    },
+    "dyeb-6382-udbs-2791": {
+        "type": "eup_plus",
+        "amount": 3,
+        "used": false
+    },
+    "bsjs-8293-sjap-6292": {
+        "type": "eup_plus",
+        "amount": 7,
+        "used": false
+    },
+    "hxks-7292-cjen-0829": {
+        "type": "crypto",
+        "coin": "ATOM",
+        "amount": 40,
+        "used": false
+    }
+}
