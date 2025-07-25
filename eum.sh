@@ -170,6 +170,7 @@ main() {
     print_header
     
     progress_bar 0.02 "Инициализация EUM..."
+    echo(Первая загрузка или загрузка после обновления длиться всегда больше чем обычная)
     print_logs
     progress_bar 0.02 "Подготовка..."
     check_python_version
