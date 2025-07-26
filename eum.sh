@@ -219,7 +219,7 @@ main() {
     echo -ne "${CYAN}\nНажмите Enter для запуска Extract...${NC}"
     read
     clear
-    python data.py
+    python main/data.py
 }
 
 main
