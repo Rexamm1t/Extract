@@ -181,7 +181,7 @@ main() {
     echo -e "${GREEN}[  #  ]${CYAN} dm ! /logs/receipts.json"
     echo -e "${GREEN}[  #  ]${CYAN} dm ! /data/keys.json"
     echo -e "${GREEN}[  #  ]${CYAN} dm ! /data/users.json"
-    echo -e "${GREEN}[  +  ]${CYAN} python run...
+    echo -e "${GREEN}[  +  ]${CYAN} python run..."
     progress_bar 0.02 "Подготовка..."
     check_python_version
     check_git_repository
