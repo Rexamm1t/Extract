@@ -119,7 +119,7 @@ setup_virtualenv() {
         sleep 1
         echo -e "${GREEN}[  #  ]${CYAN} dm ! /LICENSE.md"
         sleep 1
-        echo -e "${GREEN}[  #  ]${CYAN} dm ! /data.py"
+        echo -e "${GREEN}[  #  ]${CYAN} dm ! /main/data.py"
         sleep 1
         echo -e "${GREEN}[  #  ]${CYAN} dm ! /eum.sh"
         sleep 1
