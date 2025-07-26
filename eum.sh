@@ -108,6 +108,29 @@ setup_virtualenv() {
             exit 1
         fi
         print_success "  ✓ Виртуальное окружение создано"
+        echo -e "${GREEN}[  ?  ]${CYAN} Начинается первичная проверка целостности репозитория (Это действие будет совершено только при первом запуске)"
+        sleep 2
+        clear
+        echo -e "${GREEN}[  *  ]${CYAN} start extract platform"
+        sleep 1
+        echo -e "${GREEN}[  #  ]${CYAN} check filesystem"
+        sleep 1
+        echo -e "${GREEN}[  #  ]${CYAN} dm ! /"
+        sleep 1
+        echo -e "${GREEN}[  #  ]${CYAN} dm ! /LICENSE.md"
+        sleep 1
+        echo -e "${GREEN}[  #  ]${CYAN} dm ! /data.py"
+        sleep 1
+        echo -e "${GREEN}[  #  ]${CYAN} dm ! /eum.sh"
+        sleep 1
+        echo -e "${GREEN}[  #  ]${CYAN} dm ! /logs/receipts.json"
+        sleep 1
+        echo -e "${GREEN}[  #  ]${CYAN} dm ! /data/keys.json"
+        sleep 1
+        echo -e "${GREEN}[  #  ]${CYAN} dm ! /data/users.json"
+        sleep 1
+        echo -e "${GREEN}[  +  ]${CYAN} python run..."
+        sleep 1
     fi
     
     if ! source "${VENV_DIR}/bin/activate" >/dev/null 2>&1; then
@@ -172,16 +195,6 @@ main() {
     progress_bar 0.02 "Инициализация EUM..."
     echo -e "Первая загрузка или загрузка после обновления длиться всегда больше."
     print_logs
-    echo -e "${GREEN}[  *  ]${CYAN} start extract platform"
-    echo -e "${GREEN}[  #  ]${CYAN} check filesystem"
-    echo -e "${GREEN}[  #  ]${CYAN} dm ! /"
-    echo -e "${GREEN}[  #  ]${CYAN} dm ! /LICENSE.md"
-    echo -e "${GREEN}[  #  ]${CYAN} dm ! /data.py"
-    echo -e "${GREEN}[  #  ]${CYAN} dm ! /eum.sh"
-    echo -e "${GREEN}[  #  ]${CYAN} dm ! /logs/receipts.json"
-    echo -e "${GREEN}[  #  ]${CYAN} dm ! /data/keys.json"
-    echo -e "${GREEN}[  #  ]${CYAN} dm ! /data/users.json"
-    echo -e "${GREEN}[  +  ]${CYAN} python run..."
     progress_bar 0.02 "Подготовка..."
     check_python_version
     check_git_repository
