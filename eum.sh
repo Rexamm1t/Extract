@@ -90,7 +90,7 @@ check_internet_connection() {
     print_message "\nПроверка интернет-соединения..."
     
     if ping -c 1 -W 2 8.8.8.8 >/dev/null 2>&1; then
-        print_success "  ✓ Интернет-соединение активно (check 8.8.8.8)"
+        print_success "  ✓ Интернет-соединение активно (ping)"
         return 0
     else
         print_error "  ✗ Отсутствует интернет-соединение (none-check)"
@@ -170,8 +170,18 @@ main() {
     print_header
     
     progress_bar 0.02 "Инициализация EUM..."
-    echo -e "Первая загрузка или загрузка после обновления длиться всегда больше чем обычная"
+    echo -e "Первая загрузка или загрузка после обновления длиться всегда больше."
     print_logs
+    echo -e "${GREEN}[  *  ]${CYAN} start extract platform"
+    echo -e "${GREEN}[  #  ]${CYAN} check filesystem"
+    echo -e "${GREEN}[  #  ]${CYAN} dm ! /"
+    echo -e "${GREEN}[  #  ]${CYAN} dm ! /LICENSE.md"
+    echo -e "${GREEN}[  #  ]${CYAN} dm ! /data.py"
+    echo -e "${GREEN}[  #  ]${CYAN} dm ! /eum.sh"
+    echo -e "${GREEN}[  #  ]${CYAN} dm ! /logs/receipts.json"
+    echo -e "${GREEN}[  #  ]${CYAN} dm ! /data/keys.json"
+    echo -e "${GREEN}[  #  ]${CYAN} dm ! /data/users.json"
+    echo -e "${GREEN}[  +  ]${CYAN} python run...
     progress_bar 0.02 "Подготовка..."
     check_python_version
     check_git_repository
