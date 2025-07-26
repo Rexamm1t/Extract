@@ -21,6 +21,12 @@
         "amount": 5,
         "used": false
     },
+    "yxjs-6292-xbsk-0388": {
+        "type": "crypto",
+        "coin": "LTC",
+        "amount": 20,
+        "used": false
+    },
     "chdm-7392-ucns-0273": {
         "type": "xp",
         "amount": 10000,
