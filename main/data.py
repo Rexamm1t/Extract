@@ -9,7 +9,7 @@ from colorama import Fore, Style, init
 ADDINFO = "EXTRACT™ PLATFORM 2025"
 INFO = "Extract Team (Rexamm1t, Wefol1x)"
 VERSION = "EXTRACT 10.2.6"
-VERSION_ALL = "EXTRACT 10.2.6 (7.7.25)"
+VERSION_ALL = "EXTRACT 10.2.6 (3.7.25)"
 
 SAVE_PATH = "data/users.json"
 KEYS_PATH = "data/keys.json"
