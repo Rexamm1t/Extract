@@ -231,23 +231,45 @@ check_for_updates() {
     fi
 }
 
-# Обновление репозитория
 update_repository() {
     log "Попытка обновления репозитория..."
     print_message "Применение обновлений..."
     
-    # Сбрасываем все локальные изменения
-    if ! git reset --hard >/dev/null 2>"$GIT_ERROR_FILE"; then
+    # 1. Сброс всех локальных изменений (безопасный режим)
+    print_message "1/4 Подготовка рабочей директории..."
+    git reset --hard >/dev/null 2>"$GIT_ERROR_FILE" || {
+        print_warning "Не удалось выполнить soft reset, продолжаем..."
+    }
+
+    # 2. Очистка непроиндексированных файлов
+    print_message "2/4 Очистка неотслеживаемых файлов..."
+    git clean -fd 2>"$GIT_ERROR_FILE" || {
         error_msg=$(cat "$GIT_ERROR_FILE")
-        print_error "Ошибка сброса изменений: ${error_msg}"
-        log "Ошибка git reset: ${error_msg}"
-        return 1
+        print_warning "Частичная очистка не удалась: ${error_msg}"
+    }
+
+    # 3. Stash локальных изменений (если есть)
+    print_message "3/4 Сохранение локальных изменений..."
+    if ! git diff-index --quiet HEAD --; then
+        git stash push -m "EUM auto-stash" >/dev/null 2>"$GIT_ERROR_FILE"
+        print_success "  ✓ Локальные изменения временно сохранены (stash)"
     fi
 
-    # Обновление кода
-    if git pull 2>"$GIT_ERROR_FILE"; then
+    # 4. Обновление кода
+    print_message "4/4 Получение обновлений..."
+    if git pull --rebase 2>"$GIT_ERROR_FILE"; then
         print_success "Extract успешно обновлен!"
         log "Репозиторий успешно обновлен"
+        
+        # Попытка применить stash обратно
+        if git stash list | grep -q "EUM auto-stash"; then
+            if git stash pop >/dev/null 2>"$GIT_ERROR_FILE"; then
+                print_success "  ✓ Локальные изменения восстановлены"
+            else
+                print_warning "  ✗ Не удалось автоматически восстановить изменения"
+                print_message "  Используйте 'git stash pop' вручную для восстановления"
+            fi
+        fi
         
         # Переустановка зависимостей после обновления
         print_message "Проверка зависимостей после обновления..."
@@ -257,15 +279,28 @@ update_repository() {
     else
         error_msg=$(cat "$GIT_ERROR_FILE")
         print_error "Ошибка при обновлении: ${error_msg}"
+        
+        # Восстановление stash при ошибке
+        if git stash list | grep -q "EUM auto-stash"; then
+            git stash pop >/dev/null 2>&1
+        fi
+        
+        print_separator
         print_message "Рекомендуемые действия:"
-        print_message "1. Сохраните свои изменения: git stash"
-        print_message "2. Попробуйте обновить вручную: git pull"
+        print_message "1. Проверьте конфликтующие файлы: git status"
+        print_message "2. Вручную удалите или сохраните файлы, указанные в ошибке"
+        print_message "3. Повторите попытку обновления"
+        print_message "Или выполните команды вручную:"
+        print_message "   git reset --hard"
+        print_message "   git clean -fd"
+        print_message "   git pull"
+        print_separator
+        
         log "Ошибка git pull: ${error_msg}"
         return 1
     fi
 }
 
-# Основная функция
 main() {
     print_header
     progress_bar 0.02 "Инициализация системы обновления..."
