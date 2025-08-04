@@ -239,13 +239,18 @@ update_repository() {
 
         if $has_stash; then
             print_message "3. Восстановление локальных изменений..."
-            git stash apply --index 2>"$GIT_ERROR_FILE"
-            if [ $? -ne 0 ]; then
+            if ! git stash apply --index 2>"$GIT_ERROR_FILE"; then
                 print_warning "  ✗ Обнаружены конфликты при восстановлении"
-                print_message "   Автоматическое разрешение конфликтов..."
-                git checkout --theirs -- .
+                print_message "   Сохранение конфликтующих файлов..."
+                mkdir -p "$backup_dir/conflicts"
+                for conflict in $(git diff --name-only --diff-filter=U); do
+                    cp --parents "$conflict" "$backup_dir/conflicts/"
+                done
+                print_message "   Используются локальные изменения (ваши версии файлов)"
+                git checkout --ours -- .
                 git add -u
-                print_success "  ✓ Конфликты разрешены (использованы новые версии файлов)"
+                print_success "  ✓ Конфликты разрешены (использованы ваши версии файлов)"
+                print_message "   Конфликтующие версии сохранены в: $backup_dir/conflicts"
             else
                 print_success "  ✓ Локальные изменения успешно восстановлены"
             fi
@@ -280,6 +285,7 @@ update_repository() {
         return 1
     fi
 }
+
 main() {
     print_header
     progress_bar 0.02 "Инициализация системы..."
