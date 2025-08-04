@@ -14,7 +14,7 @@ MAGENTA='\033[0;35m'
 NC='\033[0m'
 
 fade_art() {
-    local art=("     --- Start EUM-class")
+    local art=("     --- Start EUM-class (v.3.2.826)")
     local colors=("36" "36;1" "36;2" "36;1" "36" "34;1" "34" "34;2" "34;1" "34" "36")
     for i in {0..10}; do
         clear
@@ -209,22 +209,21 @@ update_repository() {
         fi
     done
 
+    local has_stash=false
     if ! git diff-index --quiet HEAD --; then
         print_message "1. Сохранение локальных изменений..."
-        if git stash push -m "EUM auto-stash" >/dev/null 2>"$GIT_ERROR_FILE"; then
+        if git stash push --include-untracked -m "EUM auto-stash" >/dev/null 2>"$GIT_ERROR_FILE"; then
             print_success "  ✓ Изменения сохранены (stash)"
-            local has_stash=true
+            has_stash=true
         else
             error_msg=$(cat "$GIT_ERROR_FILE")
             print_error "  ✗ Не удалось сохранить изменения: ${error_msg}"
             return 1
         fi
-    else
-        local has_stash=false
     fi
 
     print_message "2. Получение обновлений..."
-    if git pull 2>"$GIT_ERROR_FILE"; then
+    if git pull --no-rebase 2>"$GIT_ERROR_FILE"; then
         print_success "  ✓ Обновление успешно завершено"
         
         for file in "${PROTECTED_FILES[@]}"; do
@@ -239,11 +238,13 @@ update_repository() {
 
         if $has_stash; then
             print_message "3. Восстановление локальных изменений..."
-            if git stash pop >/dev/null 2>"$GIT_ERROR_FILE"; then
-                print_success "  ✓ Локальные изменения восстановлены"
-            else
-                print_warning "  ✗ Не удалось восстановить изменения"
+            if ! git stash pop >"$GIT_ERROR_FILE" 2>&1; then
+                print_warning "  ✗ Не удалось автоматически восстановить изменения"
+                print_message "   Конфликты при восстановлении изменений"
                 print_message "   Используйте 'git stash pop' вручную для восстановления"
+                print_message "   Подробности в файле: $GIT_ERROR_FILE"
+            else
+                print_success "  ✓ Локальные изменения восстановлены"
             fi
         fi
 
