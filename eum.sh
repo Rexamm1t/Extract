@@ -196,94 +196,59 @@ check_for_updates() {
 
 
 update_repository() {
-    log "Попытка обновления репозитория..."
-    print_message "Применение обновлений..."
+    log "Начало процесса обновления..."
+    print_message "Подготовка к обновлению..."
 
-    local backup_dir=$(mktemp -d)
-    for file in "${PROTECTED_FILES[@]}"; do
-        if [ -f "$file" ]; then
-            cp -a "$file" "$backup_dir/" && {
-                print_success "  ✓ Создана резервная копия: $file"
-            } || {
-                print_warning "  ✗ Не удалось создать резервную копию: $file"
-            }
-        fi
-    done
+    local backup_time=$(date +"%Y%m%d_%H%M%S")
+    local backup_dir="eum-shared/backups/$backup_time"
+    mkdir -p "$backup_dir"
+    
+    cp -a "eum-shared/users.json" "$backup_dir/" 2>/dev/null || print_warning "Не удалось создать резервную копию users.json"
+    cp -a "eum-shared/config.ini" "$backup_dir/" 2>/dev/null || print_warning "Не удалось создать резервную копию config.ini"
+    print_success "Создана резервная копия данных в $backup_dir"
 
-    local has_stash=false
+    local git_changes=false
     if ! git diff-index --quiet HEAD --; then
-        print_message "1. Сохранение локальных изменений..."
-        if git stash push --include-untracked -m "EUM auto-stash" >/dev/null 2>"$GIT_ERROR_FILE"; then
-            print_success "  ✓ Изменения сохранены (stash)"
-            has_stash=true
-        else
-            error_msg=$(cat "$GIT_ERROR_FILE")
-            print_error "  ✗ Не удалось сохранить изменения: ${error_msg}"
-            return 1
-        fi
+        git_changes=true
+        print_message "Обнаружены незакоммиченные изменения в коде"
     fi
 
-    print_message "2. Получение обновлений..."
-    if git fetch origin && git reset --hard origin/$(git rev-parse --abbrev-ref HEAD) >/dev/null 2>"$GIT_ERROR_FILE"; then
-        print_success "  ✓ Обновление успешно завершено"
-        
-        for file in "${PROTECTED_FILES[@]}"; do
-            if [ -f "$backup_dir/$(basename "$file")" ]; then
-                mv -f "$backup_dir/$(basename "$file")" "$file" && {
-                    print_success "  ✓ Восстановлен файл: $file"
-                } || {
-                    print_warning "  ✗ Не удалось восстановить файл: $file"
-                }
-            fi
-        done
-
-        if $has_stash; then
-            print_message "3. Восстановление локальных изменений..."
-            if ! git stash apply --index 2>"$GIT_ERROR_FILE"; then
-                print_warning "  ✗ Обнаружены конфликты при восстановлении"
-                print_message "   Сохранение конфликтующих файлов..."
-                mkdir -p "$backup_dir/conflicts"
-                for conflict in $(git diff --name-only --diff-filter=U); do
-                    cp --parents "$conflict" "$backup_dir/conflicts/"
-                done
-                print_message "   Используются локальные изменения (ваши версии файлов)"
-                git checkout --ours -- .
-                git add -u
-                print_success "  ✓ Конфликты разрешены (использованы ваши версии файлов)"
-                print_message "   Конфликтующие версии сохранены в: $backup_dir/conflicts"
-            else
-                print_success "  ✓ Локальные изменения успешно восстановлены"
-            fi
-            git stash drop >/dev/null 2>&1
-        fi
-
-        print_message "4. Обновление зависимостей..."
-        setup_virtualenv
-        rm -rf "$backup_dir"
-        return 0
+    print_message "Загрузка обновлений с сервера..."
+    if git fetch origin && git reset --hard origin/$(git rev-parse --abbrev-ref HEAD); then
+        print_success "Код успешно обновлен"
     else
-        error_msg=$(cat "$GIT_ERROR_FILE")
-        print_error "  ✗ Ошибка при обновлении: ${error_msg}"
-
-        for file in "${PROTECTED_FILES[@]}"; do
-            if [ -f "$backup_dir/$(basename "$file")" ]; then
-                mv -f "$backup_dir/$(basename "$file")" "$file"
-            fi
-        done
-
-        if $has_stash; then
-            git stash pop >/dev/null 2>&1
-        fi
-
-        print_separator
-        print_message "Рекомендуемые действия:"
-        print_message "1. Проверьте статус: git status"
-        print_message "2. Разрешите конфликты вручную"
-        print_message "3. Повторите попытку обновления"
-        print_separator
-        rm -rf "$backup_dir"
+        print_error "Ошибка при обновлении кода"
         return 1
     fi
+
+    print_message "Восстановление пользовательских данных..."
+    cp -a "$backup_dir/users.json" "eum-shared/" 2>/dev/null || print_warning "Не удалось восстановить users.json"
+    cp -a "$backup_dir/config.ini" "eum-shared/" 2>/dev/null || print_warning "Не удалось восстановить config.ini"
+    print_success "Данные пользователей успешно восстановлены"
+
+    if $git_changes; then
+        print_message "Обнаружены незакоммиченные изменения в коде..."
+        print_message "Рекомендуется вручную проверить: git status"
+    fi
+
+    print_message "Проверка зависимостей..."
+    setup_virtualenv
+
+    if [ ! -f "eum-shared/users.json" ]; then
+        print_error "Критическая ошибка: файл users.json отсутствует!"
+        print_message "Восстанавливаем из последней резервной копии..."
+        local last_backup=$(ls -td eum-shared/backups/* | head -1)
+        if [ -n "$last_backup" ]; then
+            cp -a "$last_backup/users.json" "eum-shared/" && print_success "Файл users.json восстановлен из $last_backup"
+        else
+            print_error "Резервные копии не найдены! Создаем новый users.json"
+            echo "{}" > "eum-shared/users.json"
+        fi
+    fi
+
+    print_success "Обновление завершено успешно!"
+    print_message "Резервные копии сохранены в: $backup_dir"
+    return 0
 }
 
 main() {
