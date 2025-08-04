@@ -289,7 +289,7 @@ main() {
 
             if [[ "$choice" =~ ^[YyДд]$ ]]; then
                 if update_repository; then
-                    print_success "run setup-virtualenv..."
+                    print_success "run Extract..."
                 else
                     print_warning "Обновление не было применено"
                 fi
