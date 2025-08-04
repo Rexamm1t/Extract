@@ -178,12 +178,14 @@ check_for_updates() {
     local remote_commit=$(git rev-parse "@{u}")
     local base_commit=$(git merge-base @ "@{u}")
     if [ "$local_commit" = "$remote_commit" ]; then
-        print_success "  ✓ Установлена последняя версия Extract, local - ({local_commit:0:7}) / remote - ({remote_commit:0:7})"
+        print_success "  ✓ Установлена последняя версия Extract:"
+    print_message "local - (${local_commit:0:7}) | ExtraHost"
+    print_message "remote - (${remote_commit:0:7}) | GitHub"
         return 1
     elif [ "$local_commit" = "$base_commit" ]; then
-        print_success "Доступны новые обновления!"
-        print_message "Локальная версия: ${local_commit:0:7}"
-        print_message "Удалённая версия: ${remote_commit:0:7}"
+        print_success "Доступны новое обновление!"
+        print_message "Локальный индификатор: ${local_commit:0:7}"
+        print_message "Удалённый индификатор: ${remote_commit:0:7}"
         return 0
     elif [ "$remote_commit" = "$base_commit" ]; then
         print_warning "Есть неотправленные локальные изменения"
