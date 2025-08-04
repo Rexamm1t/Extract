@@ -224,7 +224,7 @@ update_repository() {
     print_success "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
 
     print_message "Загрузка обновлений с сервера..."
-    if git fetch origin && git reset --hard origin/$(git rev-parse); then
+    if git fetch origin && git reset --hard origin; then
         print_success "Extract успешно обновлен"
     else
         print_error "Ошибка при обновлении Extract"
