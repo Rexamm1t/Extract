@@ -172,7 +172,7 @@ setup_virtualenv() {
 
     print_message "Установка python-зависимостей..."
     local dependencies=("colorama" "requests" "psutil")
-    
+
     for dep in "${dependencies[@]}"; do
         if ! python3 -c "import $dep" 2>/dev/null; then
             if pip install "$dep" >/dev/null 2>&1; then
@@ -196,7 +196,7 @@ check_for_updates() {
 
     print_message "Проверка обновлений на ветке: $current_branch"
 
-    if ! git fetch >/dev/null 2>"$GIT_ERROR_FILE"; then
+    if ! git fetch origin "$current_branch" >/dev/null 2>"$GIT_ERROR_FILE"; then
         error_msg=$(cat "$GIT_ERROR_FILE")
         print_error "Ошибка при получении данных: ${error_msg}"
         return 1
@@ -207,8 +207,8 @@ check_for_updates() {
 
     if [ "$local_sha" != "$remote_sha" ]; then
         print_success "Доступно новое обновление для Extract!"
-        print_message "Локальная токен - версия: ${local_sha:0:7}"
-        print_message "Удалённая токен - версия: ${remote_sha:0:7}"
+        print_message "Локальная версия: ${local_sha:0:7}"
+        print_message "Удалённая версия: ${remote_sha:0:7}"
         return 0
     else
         print_success "  ✓ Extract актуален (версия: ${local_sha:0:7})"
@@ -219,10 +219,10 @@ check_for_updates() {
 update_repository() {
     log "Попытка обновления репозитория..."
     print_message "Применение обновлений..."
-    
+
     print_message "1/4 Подготовка рабочей директории..."
     git reset --hard >/dev/null 2>"$GIT_ERROR_FILE" || {
-        print_warning "Не удалось выполнить soft reset, продолжаем..."
+        print_warning "Не удалось выполнить hard reset, продолжаем..."
     }
 
     print_message "2/4 Очистка неотслеживаемых файлов..."
@@ -238,9 +238,9 @@ update_repository() {
     fi
 
     print_message "4/4 Получение обновлений..."
-    if git pull --rebase 2>"$GIT_ERROR_FILE"; then
+    if git pull --rebase origin "$current_branch" 2>"$GIT_ERROR_FILE"; then
         print_success "Extract успешно обновлен!"
-        
+
         if git stash list | grep -q "EUM auto-stash"; then
             if git stash pop >/dev/null 2>"$GIT_ERROR_FILE"; then
                 print_success "  ✓ Локальные изменения восстановлены"
@@ -249,24 +249,24 @@ update_repository() {
                 print_message "  Используйте 'git stash pop' вручную для восстановления"
             fi
         fi
-        
+
         print_message "Проверка зависимостей после обновления..."
         setup_virtualenv
-        
+
         if ! source "${VENV_DIR}/bin/activate" >/dev/null 2>&1; then
             print_error "Не удалось активировать виртуальное окружение после обновления"
             exit 1
         fi
-        
+
         return 0
     else
         error_msg=$(cat "$GIT_ERROR_FILE")
         print_error "Ошибка при обновлении: ${error_msg}"
-        
+
         if git stash list | grep -q "EUM auto-stash"; then
             git stash pop >/dev/null 2>&1
         fi
-        
+
         print_separator
         print_message "Рекомендуемые действия:"
         print_message "1. Проверьте конфликтующие файлы: git status"
@@ -277,7 +277,7 @@ update_repository() {
         print_message "   git clean -fd"
         print_message "   git pull"
         print_separator
-        
+
         return 1
     fi
 }
@@ -285,7 +285,7 @@ update_repository() {
 main() {
     print_header
     progress_bar 0.02 "Инициализация системы обновления..."
-    
+
     check_python_version
     check_git_repository
     setup_virtualenv
@@ -295,7 +295,7 @@ main() {
             print_separator
             echo -ne "${YELLOW}Установить доступное обновление? [y/n]: ${NC}"
             read -r choice
-            
+
             if [[ "$choice" =~ ^[YyДд]$ ]]; then
                 progress_bar 0.01 "Применение обновлений..."
                 if update_repository; then
@@ -321,7 +321,7 @@ main() {
     echo -e "${MAGENTA}Нажмите Enter для запуска Extract...${NC}"
     read -r
     clear
-    
+
     python main/data.py
 }
 
