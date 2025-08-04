@@ -178,7 +178,7 @@ check_for_updates() {
     local remote_commit=$(git rev-parse "@{u}")
     local base_commit=$(git merge-base @ "@{u}")
     if [ "$local_commit" = "$remote_commit" ]; then
-        print_success "  ✓ Локальная копия актуальна"
+        print_success "  ✓ Установлена последняя версия Extract, local - ({local_commit:0:7}) / remote - ({remote_commit:0:7})"
         return 1
     elif [ "$local_commit" = "$base_commit" ]; then
         print_success "Доступны новые обновления!"
