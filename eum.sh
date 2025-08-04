@@ -14,7 +14,7 @@ NC='\033[0m'
 
 fade_art() {
     local art=(
-        " --- Start EUM-class √ "
+        "     --- Start EUM-class"
     )
 
     local colors=("36" "36;1" "36;2" "36;1" "36" "34;1" "34" "34;2" "34;1" "34" "36")
@@ -207,8 +207,8 @@ check_for_updates() {
 
     if [ "$local_sha" != "$remote_sha" ]; then
         print_success "Доступно новое обновление для Extract!"
-        print_message "Локальная версия: ${local_sha:0:7}"
-        print_message "Удалённая версия: ${remote_sha:0:7}"
+        print_message "Локальная токен - версия: ${local_sha:0:7}"
+        print_message "Удалённая токен - версия: ${remote_sha:0:7}"
         return 0
     else
         print_success "  ✓ Extract актуален (версия: ${local_sha:0:7})"
@@ -293,7 +293,7 @@ main() {
     if check_internet_connection; then
         if check_for_updates; then
             print_separator
-            echo -ne "${YELLOW}Установить доступное обновление? [y/N]: ${NC}"
+            echo -ne "${YELLOW}Установить доступное обновление? [y/n]: ${NC}"
             read -r choice
             
             if [[ "$choice" =~ ^[YyДд]$ ]]; then
@@ -317,12 +317,12 @@ main() {
     fi
 
     print_separator
-    echo -e "${CYAN}Готово! Система подготовлена к работе.${NC}"
+    echo -e "${CYAN} - Готово! Вы подготовлены к работе.${NC}"
     echo -e "${MAGENTA}Нажмите Enter для запуска Extract...${NC}"
     read -r
     clear
     
-    python3 main/data.py
+    python main/data.py
 }
 
 trap cleanup EXIT
