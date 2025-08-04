@@ -220,10 +220,11 @@ update_repository() {
     fi
     
     print_success "Копирование пользовательских данных..."
-    print_message "Подключение к серверу     ExtraHost -> GitHub"
+    print_message "Подключение к серверу | ExtraHost -> GitHub"
+    print_success "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
 
     print_message "Загрузка обновлений с сервера..."
-    if git fetch origin && git reset --hard origin/$(git rev-parse --abbrev-ref HEAD); then
+    if git fetch origin && git reset --hard origin/$(git rev-parse); then
         print_success "Extract успешно обновлен"
     else
         print_error "Ошибка при обновлении Extract"
