@@ -179,7 +179,7 @@ check_for_updates() {
     local base_commit=$(git merge-base @ "@{u}")
     if [ "$local_commit" = "$remote_commit" ]; then
         print_success "  ✓ Установлена последняя версия Extract:"
-    print_message "local - (${local_commit:0:7})  | ExtraHost"
+    print_message "local  - (${local_commit:0:7}) | ExtraHost"
     print_message "remote - (${remote_commit:0:7}) | GitHub"
         return 1
     elif [ "$local_commit" = "$base_commit" ]; then
@@ -288,7 +288,7 @@ main() {
 
             if [[ "$choice" =~ ^[YyДд]$ ]]; then
                 if update_repository; then
-                    print_success "Обновление успешно завершено!"
+                    print_success "run setup-virtualenv..."
                 else
                     print_warning "Обновление не было применено"
                 fi
