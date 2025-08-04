@@ -179,7 +179,7 @@ check_for_updates() {
     local base_commit=$(git merge-base @ "@{u}")
     if [ "$local_commit" = "$remote_commit" ]; then
         print_success "  ✓ Установлена последняя версия Extract:"
-    print_message "local - (${local_commit:0:7}) | ExtraHost"
+    print_message "local - (${local_commit:0:7})  | ExtraHost"
     print_message "remote - (${remote_commit:0:7}) | GitHub"
         return 1
     elif [ "$local_commit" = "$base_commit" ]; then
@@ -219,13 +219,14 @@ update_repository() {
         }
     fi
     
-    print_success "Резервная копия создана..."
+    print_success "Копирование пользовательских данных..."
+    print_message "Подключение к серверу     ExtraHost -> GitHub"
 
     print_message "Загрузка обновлений с сервера..."
     if git fetch origin && git reset --hard origin/$(git rev-parse --abbrev-ref HEAD); then
         print_success "Extract успешно обновлен"
     else
-        print_error "Ошибка при обновлении кода"
+        print_error "Ошибка при обновлении Extract"
         return 1
     fi
 
