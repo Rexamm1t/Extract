@@ -14,7 +14,7 @@ MAGENTA='\033[0;35m'
 NC='\033[0m'
 
 fade_art() {
-    local art=("     --- Start EUM-class (v.3.2.826)")
+    local art=("     --- Start EUM (v.3.9.826)")
     local colors=("36" "36;1" "36;2" "36;1" "36" "34;1" "34" "34;2" "34;1" "34" "36")
     for i in {0..10}; do
         clear
@@ -217,11 +217,11 @@ update_repository() {
         }
     fi
     
-    print_success "Резервная копия создана: $backup_dir"
+    print_success "Резервная копия создана..."
 
     print_message "Загрузка обновлений с сервера..."
     if git fetch origin && git reset --hard origin/$(git rev-parse --abbrev-ref HEAD); then
-        print_success "Код успешно обновлен"
+        print_success "Extract успешно обновлен"
     else
         print_error "Ошибка при обновлении кода"
         return 1
@@ -244,9 +244,9 @@ update_repository() {
         }
     fi
     
-    print_success "Данные успешно восстановлены"
+    print_success "Очистка временных файлов"
 
-    print_message "Проверка зависимостей..."
+    print_message "Обновление ключевых токенов..."
     setup_virtualenv
 
     if [ ! -f "data/users.json" ]; then
@@ -257,11 +257,11 @@ update_repository() {
         else
             print_error "Резервная копия users.json не найдена"
             echo "{}" > "data/users.json"
-            print_success "Создан новый пустой users.json"
+            print_success "сброс - % - user#0"
         fi
     fi
 
-    print_message "Очистка временных файлов..."
+    print_message "Итоговая отчистка..."
     rm -rf "$backup_dir" || print_warning "Не удалось удалить резервную копию"
     
     print_success "Обновление завершено успешно!"
@@ -281,6 +281,7 @@ main() {
             print_separator
             echo -ne "${YELLOW}Установить обновление? [y/n]: ${NC}"
             read -r choice
+            progress_bar 0.01 "Проверка ключей..."
 
             if [[ "$choice" =~ ^[YyДд]$ ]]; then
                 if update_repository; then
