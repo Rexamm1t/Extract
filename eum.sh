@@ -3,7 +3,7 @@
 readonly VENV_DIR="venv"
 readonly LOG_FILE="eum-shared/eum.log"
 readonly GIT_ERROR_FILE=".git_error.tmp"
-readonly PROTECTED_FILES=("eum-shared/users.json" "eum-shared/config.ini")
+readonly PROTECTED_FILES=("data/users.json" "eum-shared/config.ini")
 
 RED='\033[0;31m'
 GREEN='\033[0;32m'
