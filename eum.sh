@@ -194,6 +194,7 @@ check_for_updates() {
     fi
 }
 
+
 update_repository() {
     log "Попытка обновления репозитория..."
     print_message "Применение обновлений..."
@@ -201,7 +202,7 @@ update_repository() {
     local backup_dir=$(mktemp -d)
     for file in "${PROTECTED_FILES[@]}"; do
         if [ -f "$file" ]; then
-            cp "$file" "$backup_dir/" && {
+            cp -a "$file" "$backup_dir/" && {
                 print_success "  ✓ Создана резервная копия: $file"
             } || {
                 print_warning "  ✗ Не удалось создать резервную копию: $file"
@@ -223,12 +224,12 @@ update_repository() {
     fi
 
     print_message "2. Получение обновлений..."
-    if git pull --no-rebase 2>"$GIT_ERROR_FILE"; then
+    if git fetch origin && git reset --hard origin/$(git rev-parse --abbrev-ref HEAD) >/dev/null 2>"$GIT_ERROR_FILE"; then
         print_success "  ✓ Обновление успешно завершено"
         
         for file in "${PROTECTED_FILES[@]}"; do
             if [ -f "$backup_dir/$(basename "$file")" ]; then
-                mv "$backup_dir/$(basename "$file")" "$file" && {
+                mv -f "$backup_dir/$(basename "$file")" "$file" && {
                     print_success "  ✓ Восстановлен файл: $file"
                 } || {
                     print_warning "  ✗ Не удалось восстановить файл: $file"
@@ -238,14 +239,17 @@ update_repository() {
 
         if $has_stash; then
             print_message "3. Восстановление локальных изменений..."
-            if ! git stash pop >"$GIT_ERROR_FILE" 2>&1; then
-                print_warning "  ✗ Не удалось автоматически восстановить изменения"
-                print_message "   Конфликты при восстановлении изменений"
-                print_message "   Используйте 'git stash pop' вручную для восстановления"
-                print_message "   Подробности в файле: $GIT_ERROR_FILE"
+            git stash apply --index 2>"$GIT_ERROR_FILE"
+            if [ $? -ne 0 ]; then
+                print_warning "  ✗ Обнаружены конфликты при восстановлении"
+                print_message "   Автоматическое разрешение конфликтов..."
+                git checkout --theirs -- .
+                git add -u
+                print_success "  ✓ Конфликты разрешены (использованы новые версии файлов)"
             else
-                print_success "  ✓ Локальные изменения восстановлены"
+                print_success "  ✓ Локальные изменения успешно восстановлены"
             fi
+            git stash drop >/dev/null 2>&1
         fi
 
         print_message "4. Обновление зависимостей..."
@@ -258,7 +262,7 @@ update_repository() {
 
         for file in "${PROTECTED_FILES[@]}"; do
             if [ -f "$backup_dir/$(basename "$file")" ]; then
-                mv "$backup_dir/$(basename "$file")" "$file"
+                mv -f "$backup_dir/$(basename "$file")" "$file"
             fi
         done
 
@@ -276,7 +280,6 @@ update_repository() {
         return 1
     fi
 }
-
 main() {
     print_header
     progress_bar 0.02 "Инициализация системы..."
