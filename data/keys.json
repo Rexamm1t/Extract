@@ -54,6 +54,11 @@
         "amount": 80000,
         "used": false
     },
+    "shkd-3729-ufhs-0382": {
+        "type": "currency",
+        "amount": 40000,
+        "used": false
+    },
     "xusm-8392-udns-2729": {
         "type": "crypto",
         "coin": "BTC",
