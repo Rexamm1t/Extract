@@ -200,18 +200,24 @@ update_repository() {
     print_message "Подготовка к обновлению..."
 
     local backup_time=$(date +"%Y%m%d_%H%M%S")
-    local backup_dir="eum-shared/backups/$backup_time"
+    local backup_dir="$HOME/eum_backup_$backup_time"
     mkdir -p "$backup_dir"
     
-    cp -a "eum-shared/users.json" "$backup_dir/" 2>/dev/null || print_warning "Не удалось создать резервную копию users.json"
-    cp -a "eum-shared/config.ini" "$backup_dir/" 2>/dev/null || print_warning "Не удалось создать резервную копию config.ini"
-    print_success "Создана резервная копия данных в $backup_dir"
-
-    local git_changes=false
-    if ! git diff-index --quiet HEAD --; then
-        git_changes=true
-        print_message "Обнаружены незакоммиченные изменения в коде"
+    if [ -f "data/users.json" ]; then
+        cp -a "data/users.json" "$backup_dir/" || {
+            print_error "Не удалось создать резервную копию users.json"
+            return 1
+        }
     fi
+    
+    if [ -f "eum-shared/config.ini" ]; then
+        cp -a "eum-shared/config.ini" "$backup_dir/" || {
+            print_error "Не удалось создать резервную копию config.ini"
+            return 1
+        }
+    fi
+    
+    print_success "Резервная копия создана: $backup_dir"
 
     print_message "Загрузка обновлений с сервера..."
     if git fetch origin && git reset --hard origin/$(git rev-parse --abbrev-ref HEAD); then
@@ -222,32 +228,43 @@ update_repository() {
     fi
 
     print_message "Восстановление пользовательских данных..."
-    cp -a "$backup_dir/users.json" "eum-shared/" 2>/dev/null || print_warning "Не удалось восстановить users.json"
-    cp -a "$backup_dir/config.ini" "eum-shared/" 2>/dev/null || print_warning "Не удалось восстановить config.ini"
-    print_success "Данные пользователей успешно восстановлены"
-
-    if $git_changes; then
-        print_message "Обнаружены незакоммиченные изменения в коде..."
-        print_message "Рекомендуется вручную проверить: git status"
+    if [ -f "$backup_dir/users.json" ]; then
+        mkdir -p "data"
+        cp -a "$backup_dir/users.json" "data/" || {
+            print_error "Не удалось восстановить users.json"
+            return 1
+        }
     fi
+    
+    if [ -f "$backup_dir/config.ini" ]; then
+        mkdir -p "eum-shared"
+        cp -a "$backup_dir/config.ini" "eum-shared/" || {
+            print_error "Не удалось восстановить config.ini"
+            return 1
+        }
+    fi
+    
+    print_success "Данные успешно восстановлены"
 
     print_message "Проверка зависимостей..."
     setup_virtualenv
 
-    if [ ! -f "eum-shared/users.json" ]; then
-        print_error "Критическая ошибка: файл users.json отсутствует!"
-        print_message "Восстанавливаем из последней резервной копии..."
-        local last_backup=$(ls -td eum-shared/backups/* | head -1)
-        if [ -n "$last_backup" ]; then
-            cp -a "$last_backup/users.json" "eum-shared/" && print_success "Файл users.json восстановлен из $last_backup"
+    if [ ! -f "data/users.json" ]; then
+        print_error "Файл users.json отсутствует после восстановления!"
+        print_message "Попытка восстановить из резервной копии..."
+        if [ -f "$backup_dir/users.json" ]; then
+            cp -a "$backup_dir/users.json" "data/" && print_success "Файл users.json восстановлен"
         else
-            print_error "Резервные копии не найдены! Создаем новый users.json"
-            echo "{}" > "eum-shared/users.json"
+            print_error "Резервная копия users.json не найдена"
+            echo "{}" > "data/users.json"
+            print_success "Создан новый пустой users.json"
         fi
     fi
 
+    print_message "Очистка временных файлов..."
+    rm -rf "$backup_dir" || print_warning "Не удалось удалить резервную копию"
+    
     print_success "Обновление завершено успешно!"
-    print_message "Резервные копии сохранены в: $backup_dir"
     return 0
 }
 
