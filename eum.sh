@@ -62,17 +62,17 @@ print_message() {
 }
 
 print_success() {
-    echo -e "${GREEN}[✓] $1${NC}"
+    echo -e "${GREEN} [✓] $1${NC}"
     log "SUCCESS: $1"
 }
 
 print_error() {
-    echo -e "${RED}[✗] ОШИБКА: $1${NC}" >&2
+    echo -e "${RED}   [✗] ОШИБКА: $1${NC}" >&2
     log "ERROR: $1"
 }
 
 print_warning() {
-    echo -e "${YELLOW}[!] ВНИМАНИЕ: $1${NC}"
+    echo -e "${YELLOW} [!] ВНИМАНИЕ: $1${NC}"
     log "WARNING: $1"
 }
 
