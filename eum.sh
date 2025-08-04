@@ -3,6 +3,7 @@
 readonly VENV_DIR="venv"
 readonly LOG_FILE="eum-shared/eum.log"
 readonly GIT_ERROR_FILE=".git_error.tmp"
+readonly PROTECTED_FILES=("eum-shared/users.json" "eum-shared/config.ini")
 
 RED='\033[0;31m'
 GREEN='\033[0;32m'
@@ -13,9 +14,7 @@ MAGENTA='\033[0;35m'
 NC='\033[0m'
 
 fade_art() {
-    local art=(
-        "     --- Start EUM-class"
-    )
+    local art=("     --- Start EUM-class")
     local colors=("36" "36;1" "36;2" "36;1" "36" "34;1" "34" "34;2" "34;1" "34" "36")
     for i in {0..10}; do
         clear
@@ -199,6 +198,17 @@ update_repository() {
     log "Попытка обновления репозитория..."
     print_message "Применение обновлений..."
 
+    local backup_dir=$(mktemp -d)
+    for file in "${PROTECTED_FILES[@]}"; do
+        if [ -f "$file" ]; then
+            cp "$file" "$backup_dir/" && {
+                print_success "  ✓ Создана резервная копия: $file"
+            } || {
+                print_warning "  ✗ Не удалось создать резервную копию: $file"
+            }
+        fi
+    done
+
     if ! git diff-index --quiet HEAD --; then
         print_message "1. Сохранение локальных изменений..."
         if git stash push -m "EUM auto-stash" >/dev/null 2>"$GIT_ERROR_FILE"; then
@@ -217,6 +227,16 @@ update_repository() {
     if git pull 2>"$GIT_ERROR_FILE"; then
         print_success "  ✓ Обновление успешно завершено"
         
+        for file in "${PROTECTED_FILES[@]}"; do
+            if [ -f "$backup_dir/$(basename "$file")" ]; then
+                mv "$backup_dir/$(basename "$file")" "$file" && {
+                    print_success "  ✓ Восстановлен файл: $file"
+                } || {
+                    print_warning "  ✗ Не удалось восстановить файл: $file"
+                }
+            fi
+        done
+
         if $has_stash; then
             print_message "3. Восстановление локальных изменений..."
             if git stash pop >/dev/null 2>"$GIT_ERROR_FILE"; then
@@ -229,10 +249,17 @@ update_repository() {
 
         print_message "4. Обновление зависимостей..."
         setup_virtualenv
+        rm -rf "$backup_dir"
         return 0
     else
         error_msg=$(cat "$GIT_ERROR_FILE")
         print_error "  ✗ Ошибка при обновлении: ${error_msg}"
+
+        for file in "${PROTECTED_FILES[@]}"; do
+            if [ -f "$backup_dir/$(basename "$file")" ]; then
+                mv "$backup_dir/$(basename "$file")" "$file"
+            fi
+        done
 
         if $has_stash; then
             git stash pop >/dev/null 2>&1
@@ -244,6 +271,7 @@ update_repository() {
         print_message "2. Разрешите конфликты вручную"
         print_message "3. Повторите попытку обновления"
         print_separator
+        rm -rf "$backup_dir"
         return 1
     fi
 }
