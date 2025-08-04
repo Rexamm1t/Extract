@@ -85,11 +85,5 @@
         "coin": "ATOM",
         "amount": 40,
         "used": false
-    },
-    "sysb-8268-suwn-7292": {
-        "type": "crypto",
-        "coin": "ATOM",
-        "amount": 30,
-        "used": false
     }
 }
