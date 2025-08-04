@@ -133,23 +133,13 @@ check_internet_connection() {
     log "Проверка интернет соединения..."
     print_message "Проверка интернет-соединения..."
 
-    local sites=("8.8.8.8" "google.com" "github.com")
-    local connected=false
-
-    for site in "${sites[@]}"; do
-        if ping -c 1 -W 2 "$site" >/dev/null 2>&1; then
-            print_success "  ✓ Соединение с $site установлено"
-            connected=true
-            break
-        fi
-    done
-
-    if ! $connected; then
+    if ping -c 1 -W 2 8.8.8.8 >/dev/null 2>&1 || ping -c 1 -W 2 google.com >/dev/null 2>&1 || ping -c 1 -W 2 github.com >/dev/null 2>&1; then
+        print_success "  ✓ Интернет-соединение установлено"
+        return 0
+    else
         print_warning "  ✗ Не удалось установить соединение"
         return 1
     fi
-
-    return 0
 }
 
 setup_virtualenv() {
@@ -161,8 +151,6 @@ setup_virtualenv() {
             exit 1
         fi
         print_success "  ✓ Виртуальное окружение создано"
-        print_message "Первичная настройка системы..."
-        progress_bar 0.05 "Инициализация платформы Extract..."
     fi
 
     if ! source "${VENV_DIR}/bin/activate" >/dev/null 2>&1; then
@@ -170,48 +158,62 @@ setup_virtualenv() {
         exit 1
     fi
 
-    print_message "Установка python-зависимостей..."
+    print_message "Проверка python-зависимостей..."
     local dependencies=("colorama" "requests" "psutil")
+    local all_ok=true
 
     for dep in "${dependencies[@]}"; do
         if ! python3 -c "import $dep" 2>/dev/null; then
             if pip install "$dep" >/dev/null 2>&1; then
-                print_success "  ✓ Успешно установлен: $dep"
+                print_success "  ✓ Установлен: $dep"
             else
                 print_warning "  ✗ Не удалось установить: $dep"
+                all_ok=false
             fi
         else
             print_success "  ✓ Уже установлен: $dep"
         fi
     done
+
+    if ! $all_ok; then
+        print_warning "Некоторые зависимости не установлены"
+    fi
 }
 
 check_for_updates() {
     log "Проверка обновлений..."
+    
     if ! current_branch=$(git rev-parse --abbrev-ref HEAD 2>"$GIT_ERROR_FILE"); then
         error_msg=$(cat "$GIT_ERROR_FILE")
         print_error "Ошибка Git: ${error_msg}"
         return 1
     fi
 
-    print_message "Проверка обновлений на ветке: $current_branch"
+    print_message "Текущая ветка: $current_branch"
 
-    if ! git fetch origin "$current_branch" >/dev/null 2>"$GIT_ERROR_FILE"; then
+    git remote update >/dev/null 2>"$GIT_ERROR_FILE" || {
         error_msg=$(cat "$GIT_ERROR_FILE")
-        print_error "Ошибка при получении данных: ${error_msg}"
+        print_error "Ошибка при обновлении информации о репозитории: ${error_msg}"
         return 1
-    fi
+    }
 
-    local local_sha=$(git rev-parse "$current_branch")
-    local remote_sha=$(git rev-parse "origin/$current_branch")
+    local local_commit=$(git rev-parse @)
+    local remote_commit=$(git rev-parse "@{u}")
+    local base_commit=$(git merge-base @ "@{u}")
 
-    if [ "$local_sha" != "$remote_sha" ]; then
-        print_success "Доступно новое обновление для Extract!"
-        print_message "Локальная версия: ${local_sha:0:7}"
-        print_message "Удалённая версия: ${remote_sha:0:7}"
+    if [ "$local_commit" = "$remote_commit" ]; then
+        print_success "  ✓ Локальная копия актуальна"
+        return 1
+    elif [ "$local_commit" = "$base_commit" ]; then
+        print_success "Доступны новые обновления!"
+        print_message "Локальная версия: ${local_commit:0:7}"
+        print_message "Удалённая версия: ${remote_commit:0:7}"
         return 0
+    elif [ "$remote_commit" = "$base_commit" ]; then
+        print_warning "Есть неотправленные локальные изменения"
+        return 1
     else
-        print_success "  ✓ Extract актуален (версия: ${local_sha:0:7})"
+        print_warning "Разошлись истории коммитов"
         return 1
     fi
 }
@@ -220,62 +222,51 @@ update_repository() {
     log "Попытка обновления репозитория..."
     print_message "Применение обновлений..."
 
-    print_message "1/4 Подготовка рабочей директории..."
-    git reset --hard >/dev/null 2>"$GIT_ERROR_FILE" || {
-        print_warning "Не удалось выполнить hard reset, продолжаем..."
-    }
-
-    print_message "2/4 Очистка неотслеживаемых файлов..."
-    git clean -fd 2>"$GIT_ERROR_FILE" || {
-        error_msg=$(cat "$GIT_ERROR_FILE")
-        print_warning "Частичная очистка не удалась: ${error_msg}"
-    }
-
-    print_message "3/4 Сохранение локальных изменений..."
+    print_message "1. Сохранение локальных изменений..."
     if ! git diff-index --quiet HEAD --; then
-        git stash push -m "EUM auto-stash" >/dev/null 2>"$GIT_ERROR_FILE"
-        print_success "  ✓ Локальные изменения временно сохранены (stash)"
+        git stash push -m "EUM auto-stash" >/dev/null 2>"$GIT_ERROR_FILE" && {
+            print_success "  ✓ Локальные изменения сохранены (stash)"
+            local has_stash=true
+        } || {
+            error_msg=$(cat "$GIT_ERROR_FILE")
+            print_warning "  ✗ Не удалось сохранить изменения: ${error_msg}"
+            local has_stash=false
+        }
+    else
+        local has_stash=false
     fi
 
-    print_message "4/4 Получение обновлений..."
-    if git pull --rebase origin "$current_branch" 2>"$GIT_ERROR_FILE"; then
-        print_success "Extract успешно обновлен!"
+    print_message "2. Получение обновлений..."
+    if git pull --rebase 2>"$GIT_ERROR_FILE"; then
+        print_success "  ✓ Обновление успешно завершено"
 
-        if git stash list | grep -q "EUM auto-stash"; then
+        if $has_stash; then
+            print_message "3. Восстановление локальных изменений..."
             if git stash pop >/dev/null 2>"$GIT_ERROR_FILE"; then
                 print_success "  ✓ Локальные изменения восстановлены"
             else
-                print_warning "  ✗ Не удалось автоматически восстановить изменения"
-                print_message "  Используйте 'git stash pop' вручную для восстановления"
+                print_warning "  ✗ Не удалось восстановить изменения"
+                print_message "   Используйте 'git stash pop' вручную для восстановления"
             fi
         fi
 
-        print_message "Проверка зависимостей после обновления..."
+        print_message "4. Обновление зависимостей..."
         setup_virtualenv
-
-        if ! source "${VENV_DIR}/bin/activate" >/dev/null 2>&1; then
-            print_error "Не удалось активировать виртуальное окружение после обновления"
-            exit 1
-        fi
 
         return 0
     else
         error_msg=$(cat "$GIT_ERROR_FILE")
-        print_error "Ошибка при обновлении: ${error_msg}"
+        print_error "  ✗ Ошибка при обновлении: ${error_msg}"
 
-        if git stash list | grep -q "EUM auto-stash"; then
+        if $has_stash; then
             git stash pop >/dev/null 2>&1
         fi
 
         print_separator
         print_message "Рекомендуемые действия:"
-        print_message "1. Проверьте конфликтующие файлы: git status"
-        print_message "2. Вручную удалите или сохраните файлы, указанные в ошибке"
+        print_message "1. Проверьте статус: git status"
+        print_message "2. Разрешите конфликты вручную"
         print_message "3. Повторите попытку обновления"
-        print_message "Или выполните команды вручную:"
-        print_message "   git reset --hard"
-        print_message "   git clean -fd"
-        print_message "   git pull"
         print_separator
 
         return 1
@@ -284,7 +275,7 @@ update_repository() {
 
 main() {
     print_header
-    progress_bar 0.02 "Инициализация системы обновления..."
+    progress_bar 0.02 "Инициализация системы..."
 
     check_python_version
     check_git_repository
@@ -293,15 +284,14 @@ main() {
     if check_internet_connection; then
         if check_for_updates; then
             print_separator
-            echo -ne "${YELLOW}Установить доступное обновление? [y/n]: ${NC}"
+            echo -ne "${YELLOW}Установить обновление? [y/n]: ${NC}"
             read -r choice
 
             if [[ "$choice" =~ ^[YyДд]$ ]]; then
-                progress_bar 0.01 "Применение обновлений..."
                 if update_repository; then
                     print_success "Обновление успешно завершено!"
                 else
-                    print_warning "Обновление завершено с проблемами"
+                    print_warning "Обновление не было применено"
                 fi
             else
                 print_message "Обновление отменено пользователем"
@@ -312,7 +302,7 @@ main() {
     fi
 
     if ! source "${VENV_DIR}/bin/activate" >/dev/null 2>&1; then
-        print_error "Не удалось активировать виртуальное окружение перед запуском"
+        print_error "Не удалось активировать виртуальное окружение"
         exit 1
     fi
 
