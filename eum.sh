@@ -142,7 +142,7 @@ setup_virtualenv() {
         exit 1
     fi
     print_message "Проверка python-зависимостей..."
-    local dependencies=("colorama" "requests" "psutil")
+    local dependencies=("colorama" "requests")
     local all_ok=true
     for dep in "${dependencies[@]}"; do
         if ! python3 -c "import $dep" 2>/dev/null; then
