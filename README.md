@@ -18,9 +18,6 @@ href="https://github.com/Wefol1x"
 <p>
   <a href="https://github.com/Rexamm1t/Extract/releases/latest"><img src="https://img.shields.io/github/v/release/Rexamm1t/Extract" alt="Latest Release" /></a>
 </p>
-<a href="https://github.com/Rexamm1t/Extract/releases">
-<img src="https://img.shields.io/github/downloads/Rexamm1t/Extract/total?style=for-the-badge" />
-</a>
 
 **Описание:**  
 Extract — это универсальный крипто-симуляционный игровой клиент, разработанный на __**Python**__. Проект включает в себя систему управления пользователями, криптовалютный рынок, игровые автоматы, ставки, уровни опыта и автоматическое сохранение данных. Поддерживается многофункциональный интерфейс с цветовым оформлением, динамической анимацией и расширенными возможностями для пользователей.
