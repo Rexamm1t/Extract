@@ -19,7 +19,7 @@ from collections import defaultdict, deque
 
 init(autoreset=True)
 
-ADDINFO = "EXTRACT™ PLATFORM 2025"
+ADDINFO = "EXTRACT™ PLATFORM"
 INFO = "Extract Team (Rexamm1t, Wefol1x)"
 VERSION = "EXTRACT 11.0.0"
 VERSION_ALL = "EXTRACT 11.0.0 (4.0.2)"
