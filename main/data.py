@@ -1371,7 +1371,7 @@ class Casino:
         
         print(f"{Fore.YELLOW}Выберите цвет:")
         print(f"{Fore.RED}1. Красное (x2)")
-        print(f"{Fore.BLACK}2. Черное (x2)")
+        print(f"2. Черное (x2)")
         print(f"{Fore.GREEN}3. Зеленое (x14)")
         
         try:
