@@ -14,13 +14,16 @@ MAGENTA='\033[0;35m'
 NC='\033[0m'
 
 fade_art() {
-    local art=(" ____    __   __   __    ____    ______  ____    ______   
-/\  _`\ /\ \ /\ \ /\ \__/\  _`\ /\  _  \/\  _`\ /\__  _\  
-\ \ \L\_\ `\`\/'/'\ \ ,_\ \ \L\ \ \ \L\ \ \ \/\_\/_/\ \/  
- \ \  _\L`\/ > <   \ \ \/\ \ ,  /\ \  __ \ \ \/_/_ \ \ \  
-  \ \ \L\ \ \/'/\`\ \ \ \_\ \ \\ \\ \ \/\ \ \ \L\ \ \ \ \ 
-   \ \____/ /\_\\ \_\\ \__\\ \_\ \_\ \_\ \_\ \____/  \ \_\
-    \/___/  \/_/ \/_/ \/__/ \/_/\/ /\/_/\/_/\/___/    \/_/                  ")
+    local art=(
+        "╔══════════════════════════════════════════════════════╗"
+        "║    _____                      _               _      ║"
+        "║   | ____|_  ___ __   ___ _ __| |_ _ __ __ _  | |     ║"
+        "║   |  _| \\ \\/ / '_ \\ / _ \\ '__| __| '__/ _\` | | |     ║"
+        "║   | |___ >  <| |_) |  __/ |  | |_| | | (_| | |_|     ║"
+        "║   |_____/_/\\_\\ .__/ \\___|_|   \\__|_|  \\__,_| (_)     ║"
+        "║              |_|                                     ║"
+        "╚══════════════════════════════════════════════════════╝"
+    )
     local colors=("36" "36;1" "36;2" "36;1" "36" "34;1" "34" "34;2" "34;1" "34" "36")
     for i in {0..10}; do
         clear
@@ -48,33 +51,34 @@ cleanup() {
 print_header() {
     clear
     fade_art
-    echo -e "${BLUE}╔════════════════════════════════════════════════════════════╗"
-    echo -e "║ При первом запуске, Extract загружается дольше чем обычно  ║"
-    echo -e "╚════════════════════════════════════════════════════════════╝${NC}"
+    echo -e "${BLUE}╔════════════════════════════════════════════════════════════════╗"
+    echo -e "║            При первом запуске загрузка может занимать            ║"
+    echo -e "║                    больше времени чем обычно                     ║"
+    echo -e "╚════════════════════════════════════════════════════════════════╝${NC}"
     log "Отображение заголовка"
 }
 
 print_separator() {
-    echo -e "${BLUE}──────────────────────────────────────────────────────────────${NC}"
+    echo -e "${BLUE}════════════════════════════════════════════════════════════════${NC}"
 }
 
 print_message() {
-    echo -e "${YELLOW}[i] $1${NC}"
+    echo -e "${CYAN}[i] $1${NC}"
     log "MESSAGE: $1"
 }
 
 print_success() {
-    echo -e "${GREEN} [✓] $1${NC}"
+    echo -e "${GREEN}[+] $1${NC}"
     log "SUCCESS: $1"
 }
 
 print_error() {
-    echo -e "${RED}   [✗] ОШИБКА: $1${NC}" >&2
+    echo -e "${RED}[!] ОШИБКА: $1${NC}" >&2
     log "ERROR: $1"
 }
 
 print_warning() {
-    echo -e "${YELLOW} [!] ВНИМАНИЕ: $1${NC}"
+    echo -e "${YELLOW}[!] ВНИМАНИЕ: $1${NC}"
     log "WARNING: $1"
 }
 
@@ -83,7 +87,7 @@ progress_bar() {
     local message=$2
     echo -ne "${BLUE}┌${CYAN} $message\n${BLUE}└[${NC}"
     for ((i=0; i<=50; i++)); do
-        echo -ne "${GREEN}■${NC}"
+        echo -ne "${GREEN}█${NC}"
         sleep $duration
     done
     echo -e "${BLUE}]${NC}"
@@ -125,10 +129,10 @@ check_internet_connection() {
     log "Проверка интернет соединения..."
     print_message "Проверка интернет-соединения..."
     if ping -c 1 -W 2 8.8.8.8 >/dev/null 2>&1 || ping -c 1 -W 2 google.com >/dev/null 2>&1 || ping -c 1 -W 2 github.com >/dev/null 2>&1; then
-        print_success "  ✓ Интернет-соединение установлено"
+        print_success "Интернет-соединение установлено"
         return 0
     else
-        print_warning "  ✗ Не удалось установить соединение"
+        print_warning "Не удалось установить соединение"
         return 1
     fi
 }
@@ -141,7 +145,7 @@ setup_virtualenv() {
             print_error "Не удалось создать виртуальное окружение"
             exit 1
         fi
-        print_success "  ✓ Виртуальное окружение создано"
+        print_success "Виртуальное окружение создано"
     fi
     if ! source "${VENV_DIR}/bin/activate" >/dev/null 2>&1; then
         print_error "Не удалось активировать виртуальное окружение"
@@ -153,13 +157,13 @@ setup_virtualenv() {
     for dep in "${dependencies[@]}"; do
         if ! python3 -c "import $dep" 2>/dev/null; then
             if pip install "$dep" >/dev/null 2>&1; then
-                print_success "  ✓ Установлен: $dep"
+                print_success "Установлен: $dep"
             else
-                print_warning "  ✗ Не удалось установить: $dep"
+                print_warning "Не удалось установить: $dep"
                 all_ok=false
             fi
         else
-            print_success "  ✓ Уже установлен: $dep"
+            print_success "Уже установлен: $dep"
         fi
     done
     if ! $all_ok; then
@@ -184,14 +188,14 @@ check_for_updates() {
     local remote_commit=$(git rev-parse "@{u}")
     local base_commit=$(git merge-base @ "@{u}")
     if [ "$local_commit" = "$remote_commit" ]; then
-        print_success "  ✓ Установлена последняя версия Extract:"
-    print_message "local  - (${local_commit:0:7}) | ExtraHost"
-    print_message "remote - (${remote_commit:0:7}) | GitHub"
+        print_success "Установлена последняя версия Extract"
+        print_message "Локальный  хэш: ${local_commit:0:7}"
+        print_message "Удаленный хэш: ${remote_commit:0:7}"
         return 1
     elif [ "$local_commit" = "$base_commit" ]; then
-        print_success "Доступны новое обновление!"
-        print_message "Локальный индификатор: ${local_commit:0:7}"
-        print_message "Удалённый индификатор: ${remote_commit:0:7}"
+        print_success "Доступно новое обновление!"
+        print_message "Локальный хэш:  ${local_commit:0:7}"
+        print_message "Удаленный хэш: ${remote_commit:0:7}"
         return 0
     elif [ "$remote_commit" = "$base_commit" ]; then
         print_warning "Есть неотправленные локальные изменения"
@@ -201,7 +205,6 @@ check_for_updates() {
         return 1
     fi
 }
-
 
 update_repository() {
     log "Начало процесса обновления..."
@@ -225,9 +228,9 @@ update_repository() {
         }
     fi
     
-    print_success "Копирование пользовательских данных..."
+    print_success "Резервное копирование данных..."
     print_message "Подключение к серверу | ExtraHost -> GitHub"
-    print_success "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+    print_separator
 
     print_message "Загрузка обновлений с сервера..."
     if git fetch origin && git reset --hard origin/$(git rev-parse --abbrev-ref HEAD); then
@@ -255,8 +258,7 @@ update_repository() {
     fi
     
     print_success "Очистка временных файлов"
-
-    print_message "Обновление ключевых токенов..."
+    print_message "Обновление зависимостей..."
     setup_virtualenv
 
     if [ ! -f "data/users.json" ]; then
@@ -267,11 +269,11 @@ update_repository() {
         else
             print_error "Резервная копия users.json не найдена"
             echo "{}" > "data/users.json"
-            print_success "сброс - % - user#0"
+            print_success "Создан базовый файл users.json"
         fi
     fi
 
-    print_message "Итоговая отчистка..."
+    print_message "Итоговая очистка..."
     rm -rf "$backup_dir" || print_warning "Не удалось удалить резервную копию"
     
     print_success "Обновление завершено успешно!"
@@ -291,11 +293,11 @@ main() {
             print_separator
             echo -ne "${YELLOW}Установить обновление? [y/n]: ${NC}"
             read -r choice
-            progress_bar 0.01 "Проверка ключей..."
+            progress_bar 0.01 "Проверка зависимостей..."
 
             if [[ "$choice" =~ ^[YyДд]$ ]]; then
                 if update_repository; then
-                    print_success "run Extract..."
+                    print_success "Обновление применено"
                 else
                     print_warning "Обновление не было применено"
                 fi
@@ -313,7 +315,7 @@ main() {
     fi
 
     print_separator
-    echo -e "${CYAN} - Готово! Вы подготовлены к работе.${NC}"
+    echo -e "${CYAN}Готово! Вы подготовлены к работе.${NC}"
     echo -e "${MAGENTA}Нажмите Enter для запуска Extract...${NC}"
     read -r
     clear
