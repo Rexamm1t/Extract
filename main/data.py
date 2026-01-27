@@ -1782,7 +1782,7 @@ class Casino:
             self.market.print_chart(coin)
             
             print(f"\n{Fore.CYAN}{'═'*60}")
-            print(f"{Fore.WHITE}Управление: ← → переключение | Enter выбор | Q выход")
+            print(f"{Fore.WHITE}Управление: a / d - переключение | Enter - выбор | Q - выход")
             print(f"{Fore.CYAN}{'═'*60}")
             
             button_line = ""
