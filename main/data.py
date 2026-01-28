@@ -2853,7 +2853,7 @@ class Casino:
                 row_color = Fore.YELLOW
                 status = "АКТИВЕН"
             
-            print(f"{row_color}║ {i:2}. ID: {credit.id[:8]} | "
+            print(f"{row_color}║ {i:2}. ID: {credit.id} | "
                   f"Валюта: {credit.currency:6} | "
                   f"Сумма: {float(credit.amount):>10.2f} | "
                   f"Ставка: {float(credit.interest_rate*Decimal('100')):>5.1f}% | "
@@ -3055,7 +3055,7 @@ class Casino:
             
             end_date_text = stake.end_date[:10] if stake.end_date else "БЕССРОЧНЫЙ"
             
-            print(f"{row_color}║ {i:2}. ID: {stake.id[:8]} | "
+            print(f"{row_color}║ {i:2}. ID: {stake.id} | "
                   f"Валюта: {stake.currency:6} | "
                   f"Сумма: {float(stake.amount):>10.2f} | "
                   f"План: {stake.plan.value:10} | "
