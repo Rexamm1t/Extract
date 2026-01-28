@@ -59,7 +59,7 @@ CRYPTO_SYMBOLS = {
     "TRX": "T",
     "MATIC": "M",
     "ANUS" : "Æ",
-    "GOVNO: "Œ",
+    "GOVNO": "Œ",
     "ATOM": "A",
     "NOT": "▲",
     "TON": "▼",
