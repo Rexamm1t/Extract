@@ -58,6 +58,8 @@ CRYPTO_SYMBOLS = {
     "AVAX": "AV",
     "TRX": "T",
     "MATIC": "M",
+    "ANUS" : "Æ",
+    "GOVNO: "Œ",
     "ATOM": "A",
     "NOT": "▲",
     "TON": "▼",
@@ -932,6 +934,10 @@ class CryptoMarket:
             "XYZ": Decimal(str(random.uniform(0.01, 0.1))),
             "ABC": Decimal(str(random.uniform(10, 50))),
             "DEF": Decimal(str(random.uniform(100, 500))),
+            "ANUS":
+Decimal(str(random.uniform(5, 2000))),
+            "GOVNO":
+Decimal(str(random.uniform(5, 2000))),
             "GHI": Decimal(str(random.uniform(5, 20))),
             "JKL": Decimal(str(random.uniform(0.001, 0.01))),
             "MNO": Decimal(str(random.uniform(0.5, 2))),
